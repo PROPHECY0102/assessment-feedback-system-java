@@ -1,4 +1,4 @@
-package com.apu_afs.Views;
+package com.apu_afs.Views.components;
 
 import javax.swing.JPanel;
 
