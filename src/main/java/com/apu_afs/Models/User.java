@@ -11,12 +11,9 @@ public class User {
   private char gender;
   private String email;
   private String phoneNumber;
+  private String role;
 
   private static final String filePath = "data/users.txt";
-
-  public User() {
-
-  }
 
   public User(ArrayList<String> props) {
     this.username = props.get(0);
@@ -26,6 +23,7 @@ public class User {
     this.gender = props.get(4).charAt(0);
     this.email = props.get(5);
     this.phoneNumber = props.get(6);
+    this.role = props.get(7);
   }
 
   public static boolean doesUserExists(String username) {
@@ -86,6 +84,10 @@ public class User {
     return phoneNumber;
   }
 
+  public String getRole() {
+    return role;
+  }
+
   public void setUsername(String username) {
     this.username = username;
   }
@@ -114,6 +116,10 @@ public class User {
     this.phoneNumber = phoneNumber;
   }
 
+  public void setRole(String role) {
+    this.role = role;
+  }
+
   public void updateUser() {
     ArrayList<String> usersData = Data.fetch(User.filePath);
     ArrayList<String> updatedUsersData = usersData.stream().filter((userRow) -> {
@@ -129,6 +135,7 @@ public class User {
     updatedUserProps.add(String.valueOf(this.gender));
     updatedUserProps.add(this.email);
     updatedUserProps.add(this.phoneNumber);
+    updatedUserProps.add(this.role);
 
     updatedUsersData.add(String.join(", ", updatedUserProps));
     Data.save(User.filePath, String.join("\n", updatedUsersData));
