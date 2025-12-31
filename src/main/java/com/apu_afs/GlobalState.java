@@ -7,7 +7,7 @@ import com.apu_afs.Models.Data;
 import com.apu_afs.Models.User;
 
 public class GlobalState {
-  private User currUser;
+  private User currUser; // nullable must check before using
   private boolean staySignedIn;
 
   private static final String filepath = "data/state.txt";
@@ -43,10 +43,10 @@ public class GlobalState {
   }
 
   public void saveState() {
-    ArrayList<String> currState = new ArrayList<>();
-    currState.add(this.currUser.getUsername());
-    currState.add(String.valueOf(this.staySignedIn));
+    ArrayList<String> updatedState = new ArrayList<>();
+    updatedState.add(this.currUser == null ? "guest" : this.currUser.getUsername());
+    updatedState.add(String.valueOf(this.staySignedIn));
 
-    Data.save(filepath, String.join(", ", currState));
+    Data.save(filepath, String.join(", ", updatedState));
   }
 }

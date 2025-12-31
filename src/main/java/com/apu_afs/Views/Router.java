@@ -3,27 +3,39 @@ package com.apu_afs.Views;
 import javax.swing.JPanel;
 import com.apu_afs.GlobalState;
 
+import net.miginfocom.swing.MigLayout;
+
 public class Router extends JPanel {
+  private Pages currPage;
 
   public Router(GlobalState state) {
-
-    this.showView("login", state);
+    super(new MigLayout("fill", "[]", "[]"));
+    this.showView(Pages.LOGIN, state);
   }
   
-  public void showView(String page, GlobalState state) {
+  public void showView(Pages page, GlobalState state) {
     this.removeAll();
-
-    this.add(this.createPanel(page, state));
+    
+    this.currPage = page;
+    this.add(this.createPanel(page, state), "grow");
 
     revalidate();
     repaint();
   }
 
-  private JPanel createPanel(String page, GlobalState state) {
+  private JPanel createPanel(Pages page, GlobalState state) {
     switch (page) {
-      case "login": return new LoginPage(this, state);
-      case "dashboard": return new DashboardPage(this, state);
+      case Pages.LOGIN: return new LoginPage(this, state);
+      case Pages.DASHBOARD: return new DashboardPage(this, state);
       default: return new DashboardPage(this, state);
     }
+  }
+
+  public Pages getCurrPage() {
+    return currPage;
+  }
+
+  public void setCurrPage(Pages currPage) {
+    this.currPage = currPage;
   }
 }
