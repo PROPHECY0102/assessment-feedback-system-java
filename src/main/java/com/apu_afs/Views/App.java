@@ -30,7 +30,11 @@ public class App extends JFrame {
   public static final Color blue800 = new Color(0x193cb8);
   public static final Color blue600 = new Color(0x155dfc);
 
+  public static final Color green600 = new Color(0x00a63e);
+
   public static final Color red600 = new Color(0xe7000b);
+
+  public static final Color orange600 = new Color(0xe17100);
   
   public App(GlobalState state) {
     this.setTitle(App.title);

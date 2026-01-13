@@ -37,7 +37,7 @@ public class HeaderPanel extends JPanel {
   
   
   public HeaderPanel(Router router, GlobalState state) {
-    super(new MigLayout("insets 5 10, fill"));
+    super(new MigLayout("insets 5 10"));
     this.setBackground(App.slate900);
     this.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
@@ -78,7 +78,7 @@ public class HeaderPanel extends JPanel {
     profileUsernameLabel = new JLabel();
     profileUsernameLabel.setText(state.getCurrUser().getUsername());
     profileUsernameLabel.setForeground(App.slate100);
-    profileUsernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+    profileUsernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
 
     profileUsernameContainer = new JPanel(new MigLayout("insets 0"));
     profileUsernameContainer.setBackground(App.slate900);
@@ -91,12 +91,16 @@ public class HeaderPanel extends JPanel {
       state.getCurrUser().getFirstName() + " " + state.getCurrUser().getLastName() + ", " + state.getCurrUser().getRole().substring(0, 1).toUpperCase() + state.getCurrUser().getRole().substring(1)
     );
     profileRoleLabel.setForeground(App.slate100);
+    profileRoleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
     
     editProfileBtn = new JButton();
     editProfileBtn.setText("Edit Profile");
+    editProfileBtn.setIcon(App.iconResizer(new ImageIcon("assets/header-edit-profile.png"), 18, 18));
     editProfileBtn.setBackground(App.slate100);
     editProfileBtn.setForeground(App.slate900);
-    editProfileBtn.setBorder(BorderFactory.createCompoundBorder(editProfileBtn.getBorder(), BorderFactory.createEmptyBorder(1, 2, 1, 2)));
+    editProfileBtn.setBorder(BorderFactory.createCompoundBorder(editProfileBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    editProfileBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    editProfileBtn.setFocusable(false);
     
     editProfileContainer = new JPanel(new MigLayout("insets 0"));
     editProfileContainer.setBackground(App.slate900);
@@ -106,9 +110,9 @@ public class HeaderPanel extends JPanel {
     headerProfileSection.setBackground(App.slate900);
     headerProfileSection.add(profileUsernameContainer, "growx");
     headerProfileSection.add(profileRoleLabel, "growx");
-    headerProfileSection.add(editProfileContainer, "growx");
 
     this.add(headerTitleSection);
-    this.add(headerProfileSection, "align right");
+    this.add(headerProfileSection, "push, align right, gapright 10");
+    this.add(editProfileContainer, "align right");
   }
 }

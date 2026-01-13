@@ -1,10 +1,10 @@
 package com.apu_afs.Models;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Lecturer extends User {
   
-  public Lecturer(ArrayList<String> props) {
+  public Lecturer(List<String> props) {
     super(props);
   }
 

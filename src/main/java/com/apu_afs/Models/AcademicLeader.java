@@ -1,10 +1,10 @@
 package com.apu_afs.Models;
 
-import java.util.*;
+import java.util.List;
 
 public class AcademicLeader extends User {
   
-  public AcademicLeader(ArrayList<String> props) {
+  public AcademicLeader(List<String> props) {
     super(props);
   }
 

@@ -1,6 +1,7 @@
 package com.apu_afs.Models;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.apu_afs.Views.Pages;
@@ -15,11 +16,11 @@ public abstract class User {
   String phoneNumber;
   String role;
 
-  ArrayList<NavOption> navOptions;
+  List<NavOption> navOptions;
 
   public static final String filePath = "data/users.txt";
 
-  public User(ArrayList<String> props) {
+  public User(List<String> props) {
     this.username = props.get(0).trim();
     this.password = props.get(1).trim();
     this.firstName = props.get(2).trim();
@@ -34,10 +35,10 @@ public abstract class User {
   }
 
   public static User userAuth(String username, String password) {
-    ArrayList<String> usersData = Data.fetch(User.filePath);
+    List<String> usersData = Data.fetch(User.filePath);
 
     for (String user : usersData) {
-      ArrayList<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
 
       if (props.get(0).trim().equals(username) && props.get(1).trim().equals(password)) {
         if (props.get(7).trim().equals("admin")) {
@@ -56,10 +57,10 @@ public abstract class User {
   }
 
   public static User getUserByUsername(String username) {
-    ArrayList<String> usersData = Data.fetch(User.filePath);
+    List<String> usersData = Data.fetch(User.filePath);
 
     for (String user : usersData) {
-      ArrayList<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
       
       if (props.get(0).trim().equals(username)) {
         if (props.get(7).trim().equals("admin")) {
@@ -75,6 +76,33 @@ public abstract class User {
     }
 
     return null;
+  }
+
+  public static List<User> fetchUsers(String search, List<String> roleConditions) {
+    List<String> usersData = Data.fetch(User.filePath);
+    List<User> users = new ArrayList<>();
+
+    for (String user : usersData) {
+      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      
+      if (props.get(7).trim().equals("admin")) {
+        users.add(new Admin(props));
+      } else if (props.get(7).trim().equals("academic")) {
+        users.add(new AcademicLeader(props));
+      } else if (props.get(7).trim().equals("lecturer")) {
+        users.add(new Lecturer(props));
+      } else {
+        users.add(new Student(props));
+      }
+    }
+
+    users = users.stream().filter(user -> {
+      return roleConditions.contains(user.getRole());
+    }).filter(user -> {
+      return user.getUsername().toLowerCase().contains(search.toLowerCase());
+    }).collect(Collectors.toList());
+
+    return users;
   }
 
   public String getUsername() {
@@ -109,7 +137,7 @@ public abstract class User {
     return this.role;
   }
 
-  public ArrayList<NavOption> getNavOptions() {
+  public List<NavOption> getNavOptions() {
     return navOptions;
   }
 
@@ -154,13 +182,13 @@ public abstract class User {
   }
 
   public void updateUser() {
-    ArrayList<String> usersData = Data.fetch(User.filePath);
-    ArrayList<String> updatedUsersData = usersData.stream().filter((userRow) -> {
-      ArrayList<String> props = new ArrayList<String>(Arrays.asList(userRow.split(", ")));
+    List<String> usersData = Data.fetch(User.filePath);
+    List<String> updatedUsersData = usersData.stream().filter((userRow) -> {
+      List<String> props = new ArrayList<String>(Arrays.asList(userRow.split(", ")));
       return !props.get(0).trim().equals(this.username);
     }).collect(Collectors.toCollection(ArrayList::new));
 
-    ArrayList<String> updatedUserProps = new ArrayList<String>();
+    List<String> updatedUserProps = new ArrayList<String>();
     updatedUserProps.add(this.username);
     updatedUserProps.add(this.password);
     updatedUserProps.add(this.firstName);

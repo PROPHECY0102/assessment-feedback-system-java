@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Data {
-  public static ArrayList<String> fetch(String filepathStr) {
+  public static List<String> fetch(String filepathStr) {
     Path filePath = Paths.get(filepathStr);
 
     try {
@@ -15,7 +15,7 @@ public class Data {
         return new ArrayList<String>();
       }
 
-      ArrayList<String> rows = new ArrayList<String>(Arrays.asList(data.split("\n")));
+      List<String> rows = new ArrayList<String>(Arrays.asList(data.split("\n")));
       return rows;
     } catch (IOException e) {
       e.printStackTrace();

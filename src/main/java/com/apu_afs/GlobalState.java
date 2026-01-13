@@ -1,6 +1,7 @@
 package com.apu_afs;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 
 import com.apu_afs.Models.Data;
@@ -13,8 +14,9 @@ public class GlobalState {
   private static final String filepath = "data/state.txt";
 
   public GlobalState() {
-    ArrayList<String> stateData = Data.fetch(GlobalState.filepath);
-    ArrayList<String> stateDataProps = new ArrayList<String>(Arrays.asList(stateData.get(0).split(", ")));
+    List<String> stateData = Data.fetch(GlobalState.filepath);
+
+    List<String> stateDataProps = new ArrayList<String>(Arrays.asList(stateData.get(0).split(", ")));
     if (stateDataProps.get(0).equals("guest")) {
       this.currUser = null;
       this.staySignedIn = false;
@@ -43,7 +45,7 @@ public class GlobalState {
   }
 
   public void saveState() {
-    ArrayList<String> updatedState = new ArrayList<>();
+    List<String> updatedState = new ArrayList<>();
     updatedState.add(this.currUser == null ? "guest" : this.currUser.getUsername());
     updatedState.add(String.valueOf(this.staySignedIn));
 

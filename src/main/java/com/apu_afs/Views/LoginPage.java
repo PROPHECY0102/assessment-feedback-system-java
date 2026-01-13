@@ -16,7 +16,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -133,7 +132,7 @@ public class LoginPage extends JPanel {
     loginBtn.setBorder(BorderFactory.createCompoundBorder(loginBtn.getBorder(), BorderFactory.createEmptyBorder(6, 12, 6, 12)));
     loginBtn.addActionListener(e -> {
       String usernameInput = usernameTextfield.getText().trim();
-      String passwordInput = passwordTextField.getText().trim();
+      String passwordInput = new String(passwordTextField.getPassword()).trim();
 
       User possibleUser = User.userAuth(usernameInput, passwordInput);
       if (possibleUser == null) {

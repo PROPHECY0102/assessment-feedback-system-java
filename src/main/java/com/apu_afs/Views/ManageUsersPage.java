@@ -1,12 +1,31 @@
 package com.apu_afs.Views;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JCheckBox;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 
 import com.apu_afs.GlobalState;
+import com.apu_afs.Models.User;
+import com.apu_afs.TableModels.UserTableModel;
 import com.apu_afs.Views.components.HeaderPanel;
 import com.apu_afs.Views.components.NavPanel;
+import com.apu_afs.Views.components.TextField;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -16,7 +35,35 @@ public class ManageUsersPage extends JPanel {
   NavPanel nav;
 
   JPanel contentBody;
-  JPanel searchBar;
+
+  JPanel searchSection;
+  TextField searchField;
+  JButton searchClearBtn;
+  JButton searchBtn;
+
+  JPanel filterOptionsContainer;
+  JCheckBox filterAdminCheckButton;
+  JCheckBox filterAcademicCheckButton;
+  JCheckBox filterLecturerCheckButton;
+  JCheckBox filterStudentCheckButton;
+
+  JPanel searchFilterGroup;
+
+  JPanel actionBtnsContainer;
+  JButton addBtn;
+  JButton editBtn;
+
+  JPanel searchFilterActionRow;
+
+  JPanel tableSection;
+  JLabel rowCountLabel;
+  JTable table;
+
+  List<User> users;
+  UserTableModel userTableModel;
+  List<String> roleConditions;
+ 
+  private static final String dataContext = "Users";
   
   public ManageUsersPage(Router router, GlobalState state) {
     super(new MigLayout(
@@ -35,12 +82,166 @@ public class ManageUsersPage extends JPanel {
     header = new HeaderPanel(router, state);
     nav = new NavPanel(router, state);
 
-    contentBody = new JPanel(new MigLayout("align center center"));
+    contentBody = new JPanel(new MigLayout("insets 20 20, wrap 1, gapy 10"));
     contentBody.setBackground(App.slate100);
 
-    JLabel temp = new JLabel();
-    temp.setText("this is manage users page" + router.getCurrPage().getDisplay());
-    contentBody.add(temp);
+    searchField = new TextField("Search " + dataContext + "...");
+    searchField.setBackground(App.slate200);
+    searchField.setBorder(BorderFactory.createCompoundBorder(searchField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    searchField.setPreferredSize(new Dimension(250, 35));
+
+    searchClearBtn = new JButton();
+    searchClearBtn.setText("Clear");
+    searchClearBtn.setIcon(App.iconResizer(new ImageIcon("assets/cancel-icon.png"), 18, 18));
+    searchClearBtn.setForeground(Color.WHITE);
+    searchClearBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    searchClearBtn.setBackground(App.red600);
+    searchClearBtn.setFocusable(false);
+    searchClearBtn.setBorder(BorderFactory.createCompoundBorder(searchClearBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+
+    searchBtn = new JButton();
+    searchBtn.setText("Search");
+    searchBtn.setIcon(App.iconResizer(new ImageIcon("assets/search-icon.png"), 18, 18));
+    searchBtn.setForeground(Color.WHITE);
+    searchBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    searchBtn.setBackground(App.blue600);
+    searchBtn.setFocusable(false);
+    searchBtn.setBorder(BorderFactory.createCompoundBorder(searchBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+
+    searchSection = new JPanel(new MigLayout("insets 0, gapx 5, aligny center"));
+    searchSection.setBackground(App.slate100);
+    searchSection.add(searchField);
+    searchSection.add(searchClearBtn);
+    searchSection.add(searchBtn);
+
+    filterAdminCheckButton = new JCheckBox();
+    filterAdminCheckButton.setText("Admin");
+    filterAdminCheckButton.setSelected(true);
+
+    filterAcademicCheckButton = new JCheckBox();
+    filterAcademicCheckButton.setText("Academic Leader");
+    filterAcademicCheckButton.setSelected(true);
+
+    filterLecturerCheckButton = new JCheckBox();
+    filterLecturerCheckButton.setText("Lecturer");
+    filterLecturerCheckButton.setSelected(true);
+
+    filterStudentCheckButton = new JCheckBox();
+    filterStudentCheckButton.setText("Student");
+    filterStudentCheckButton.setSelected(true);
+
+    filterOptionsContainer = new JPanel(new MigLayout("insets 0, gapx 5"));
+    filterOptionsContainer.setBackground(App.slate100);
+    filterOptionsContainer.add(filterAdminCheckButton);
+    filterOptionsContainer.add(filterAcademicCheckButton);
+    filterOptionsContainer.add(filterLecturerCheckButton);
+    filterOptionsContainer.add(filterStudentCheckButton);
+
+    searchFilterGroup = new JPanel(new MigLayout("insets 0, wrap 1"));
+    searchFilterGroup.setBackground(App.slate100);
+    searchFilterGroup.add(searchSection);
+    searchFilterGroup.add(filterOptionsContainer);
+
+    addBtn = new JButton();
+    addBtn.setText("Add " + dataContext);
+    addBtn.setIcon(App.iconResizer(new ImageIcon("assets/add-icon.png"), 18, 18));
+    addBtn.setForeground(Color.WHITE);
+    addBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    addBtn.setBackground(App.green600);
+    addBtn.setFocusable(false);
+    addBtn.setBorder(BorderFactory.createCompoundBorder(addBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+
+    editBtn = new JButton();
+    editBtn.setText("Edit Selected " + dataContext.substring(0, dataContext.length() - 1));
+    editBtn.setIcon(App.iconResizer(new ImageIcon("assets/edit-icon.png"), 18, 18));
+    editBtn.setForeground(Color.WHITE);
+    editBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    editBtn.setBackground(App.orange600);
+    editBtn.setFocusable(false);
+    editBtn.setBorder(BorderFactory.createCompoundBorder(editBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+
+    actionBtnsContainer = new JPanel(new MigLayout("insets 0, gapx 5"));
+    actionBtnsContainer.setBackground(App.slate100);
+    actionBtnsContainer.add(addBtn);
+    actionBtnsContainer.add(editBtn);
+
+    searchFilterActionRow = new JPanel(new MigLayout("insets 5 10"));
+    searchFilterActionRow.setBackground(App.slate100);
+    searchFilterActionRow.add(searchFilterGroup);
+    searchFilterActionRow.add(actionBtnsContainer, "push, align right");
+
+    String[] defaultRoleConditions = {"admin", "student", "lecturer", "academic"};
+    roleConditions = new ArrayList<>(Arrays.asList(defaultRoleConditions));
+    
+    users = User.fetchUsers("", roleConditions);
+    userTableModel = new UserTableModel(users);
+
+    rowCountLabel = new JLabel();
+    rowCountLabel.setText("Total " + dataContext + " queried: " + String.valueOf(userTableModel.getRowCount()));
+    rowCountLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+
+    table = new JTable(userTableModel);
+    // Wrap the table in a JScrollPane to show column headers
+    JScrollPane scrollPane = new JScrollPane(table);
+    scrollPane.setBackground(App.slate100);
+
+    // Configure table appearance
+    table.setFillsViewportHeight(true);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    table.setRowHeight(40); // Add padding to rows
+
+    // Style the table header
+    JTableHeader tableHeader = table.getTableHeader();
+    tableHeader.setBackground(new Color(51, 65, 85)); // Darker contrasting color
+    tableHeader.setForeground(Color.WHITE);
+    tableHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
+    tableHeader.setPreferredSize(new Dimension(tableHeader.getPreferredSize().width, 45));
+
+    // Style the table cells
+    table.setBackground(Color.WHITE);
+    table.setForeground(Color.BLACK);
+    table.setFont(new Font("SansSerif", Font.PLAIN, 13));
+    table.setGridColor(new Color(226, 232, 240)); // Light gray grid lines
+    table.setShowGrid(true);
+    table.setIntercellSpacing(new Dimension(1, 1));
+
+    // Add cell padding with a custom renderer
+    DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, 
+                isSelected, hasFocus, row, column);
+            
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+                label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12)); // Padding
+            }
+            
+            // Alternate row colors
+            if (!isSelected) {
+                if (row % 2 == 0) {
+                    c.setBackground(Color.WHITE);
+                } else {
+                    c.setBackground(new Color(248, 250, 252)); // Very light gray
+                }
+            }
+            
+            return c;
+        }
+    };
+
+    // Apply the renderer to all columns
+    for (int i = 0; i < table.getColumnCount(); i++) {
+        table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+    }
+
+    tableSection = new JPanel(new MigLayout("insets 5 10, wrap 1, gapy 5"));
+    tableSection.setBackground(App.slate100);
+    tableSection.add(rowCountLabel);
+    tableSection.add(scrollPane, "grow, width 100%");
+    contentBody.add(searchFilterActionRow, "growx, width 100%");
+    contentBody.add(tableSection, "grow, width 100%");
     
     this.add(header, "span, growx, wrap");
     this.add(nav, "growy");
