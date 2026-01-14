@@ -63,6 +63,7 @@ public class ManageUsersPage extends JPanel {
   UserTableModel userTableModel;
   List<String> roleConditions;
  
+  private static final String[] allowedRoles = {"admin"};
   private static final String dataContext = "Users";
   
   public ManageUsersPage(Router router, GlobalState state) {
@@ -73,10 +74,14 @@ public class ManageUsersPage extends JPanel {
     ));
 
     if (state.getCurrUser() == null) {
-      SwingUtilities.invokeLater(() -> {
-        router.showView(Pages.LOGIN, state);
-      });
-      return;
+        SwingUtilities.invokeLater(() -> {
+            router.showView(Pages.LOGIN, state);
+        });
+        return;
+    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole())) {
+        SwingUtilities.invokeLater(() -> {
+            router.showView(Pages.DASHBOARD, state);
+        });
     }
 
     header = new HeaderPanel(router, state);
