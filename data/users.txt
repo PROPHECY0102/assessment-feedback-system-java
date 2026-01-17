@@ -1,4 +1,5 @@
-1, admin, 456, Jesse, Pinkman, m, jesse555@mail.com, 234567891, admin
-2, john, 123, John, Doe, m, john123@mail.com, 12345678, lecturer
-3, joyce, 8873, Joyce, Whitman, f, joyce238@yahoo.com, 88372771, academic
-4, lola, 789, Lola, Martinez, f, lola123@mail.com, 345678912, student
+1, admin, 456, Jesse, Pinkman, male, jesse555@mail.com, 234567891, admin
+3, joyce, 8873, Joyce, Whitman, female, joyce238@yahoo.com, 88372771, academic
+4, lola, 789, Lola, Martinez, female, lola123@mail.com, 345678912, student
+5, asd, asdASD#123, qwe, def, male, asd@asd.com, 31435464324, academic
+2, john, 123456%As, John, Doe, male, john123@mail.com, 12345678, lecturer
