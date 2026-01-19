@@ -1,5 +1,6 @@
 package com.apu_afs.Models;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -117,6 +118,38 @@ public class Validation {
     for (String column : columns) {
       if (!options.contains(inputValues.get(column))) {
         response.setMessage(Helper.firstLetterUpperCase(column) + " must be value of (" + String.join(", ", options) + ")");
+        response.setSuccess(false);
+        response.setField(column);
+        break;
+      }
+    }
+
+    return response;
+  }
+
+  public static Validation validDateCheck(String[] columns, HashMap<String, String> inputValues) {
+    Validation response = new Validation(true);
+
+    for (String column : columns) {
+      if (!Helper.isValidDate(inputValues.get(column))) {
+        response.setMessage(Helper.firstLetterUpperCase(column) + " must be a valid date in the format of (dd-MM-yyyy) example: 21-01-2003");
+        response.setSuccess(false);
+        response.setField(column);
+        break;
+      }
+    }
+
+    return response;
+  }
+
+  // only for fields that passed validDateCheck
+  public static Validation maxDateCheck(String[] columns, HashMap<String, String> inputValues, LocalDate maxDate) {
+    Validation response = new Validation(true);
+
+    for (String column : columns) {
+      LocalDate inputDate = LocalDate.parse(inputValues.get(column), Helper.dateTimeFormatter);
+      if (inputDate.isAfter(maxDate)) {
+        response.setMessage(Helper.firstLetterUpperCase(column) + " must be before " + maxDate.format(Helper.dateTimeFormatter));
         response.setSuccess(false);
         response.setField(column);
         break;

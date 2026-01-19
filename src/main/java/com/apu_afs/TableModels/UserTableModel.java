@@ -13,7 +13,7 @@ public class UserTableModel extends AbstractTableModel {
     private List<User> users;
     private final String[] columnNames = {
         "ID", "Username", "Password", "First Name", "Last Name", 
-        "Gender", "Email", "Phone Number", "Role"
+        "Gender", "D.O.B", "Email", "Phone Number", "Role"
     };
 
     public UserTableModel(List<User> users) {
@@ -51,9 +51,10 @@ public class UserTableModel extends AbstractTableModel {
             case 3: return user.getFirstName();
             case 4: return user.getLastName();
             case 5: return User.genderOptions.get(user.getGender());
-            case 6: return user.getEmail();
-            case 7: return user.getPhoneNumber();
-            case 8: return User.roleOptions.get(user.getRole());
+            case 6: return user.getDob().format(Helper.dateTimeFormatter);
+            case 7: return user.getEmail();
+            case 8: return user.getPhoneNumber();
+            case 9: return User.roleOptions.get(user.getRole());
             default: return null;
         }
     }

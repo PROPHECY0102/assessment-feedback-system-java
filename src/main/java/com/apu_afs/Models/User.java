@@ -1,8 +1,10 @@
 package com.apu_afs.Models;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.apu_afs.Helper;
 import com.apu_afs.Views.Pages;
 
 public abstract class User {
@@ -12,6 +14,7 @@ public abstract class User {
   String firstName;
   String lastName;
   String gender;
+  LocalDate dob;
   String email;
   String phoneNumber;
   String role;
@@ -25,9 +28,10 @@ public abstract class User {
     Map.entry("firstName", 3),
     Map.entry("lastName", 4),
     Map.entry("gender", 5),
-    Map.entry("email", 6),
-    Map.entry("phoneNumber", 7),
-    Map.entry("role", 8)
+    Map.entry("dob", 6),
+    Map.entry("email", 7),
+    Map.entry("phoneNumber", 8),
+    Map.entry("role", 9)
   );
 
   public static final Map<String, String> genderOptions = Map.ofEntries(
@@ -51,6 +55,7 @@ public abstract class User {
     this.firstName = props.get(columnLookup.get("firstName")).trim();
     this.lastName = props.get(columnLookup.get("lastName")).trim();
     this.gender = props.get(columnLookup.get("gender")).trim();
+    this.dob = LocalDate.parse(props.get(columnLookup.get("dob")).trim(), Helper.dateTimeFormatter);
     this.email = props.get(columnLookup.get("email")).trim();
     this.phoneNumber = props.get(columnLookup.get("phoneNumber")).trim();
     this.role = props.get(columnLookup.get("role")).trim();
@@ -76,6 +81,7 @@ public abstract class User {
     this.firstName = inputValues.get("firstName");
     this.lastName = inputValues.get("lastName");
     this.gender = inputValues.get("gender");
+    this.dob = LocalDate.parse(inputValues.get("dob").trim(), Helper.dateTimeFormatter);
     this.email = inputValues.get("email");
     this.phoneNumber = inputValues.get("phoneNumber");
     this.role = inputValues.get("role");
@@ -126,6 +132,40 @@ public abstract class User {
     }
 
     return null;
+  }
+
+  public static List<User> getListOfUsersByMatchingValues(String column, String value) {
+    List<String> usersData = Data.fetch(User.filePath);
+    List<User> users = new ArrayList<>();
+
+    for (String user : usersData) {
+      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      
+      if (props.get(columnLookup.get("role")).trim().equals("admin")) {
+        users.add(new Admin(props));
+      } else if (props.get(columnLookup.get("role")).trim().equals("academic")) {
+        users.add(new AcademicLeader(props));
+      } else if (props.get(columnLookup.get("role")).trim().equals("lecturer")) {
+        users.add(new Lecturer(props));
+      } else {
+        users.add(new Student(props));
+      }
+    }
+
+    users.stream().filter(user -> {
+      Map<String, String> userValuesLookup = Map.ofEntries(
+        Map.entry("firstName", user.getID()),
+        Map.entry("lastName", user.getUsername()),
+        Map.entry("gender", user.getGender()),
+        Map.entry("email", user.getEmail()),
+        Map.entry("phoneNumber", user.getPhoneNumber()),
+        Map.entry("role", user.getRole())
+      );
+
+      return userValuesLookup.get(column).equals(value);
+    }).collect(Collectors.toList());
+
+    return users;
   }
 
   public static List<User> fetchUsers(String search, List<String> roleConditions) {
@@ -226,6 +266,17 @@ public abstract class User {
       return emailRegexCheck;
     }
 
+    // Check if Date of birth is valid input and not after the present date
+    Validation validDateCheck = Validation.validDateCheck(new String[] {"dob"}, inputValues);
+    if (!validDateCheck.getSuccess()) {
+      return validDateCheck;
+    }
+
+    Validation notAfterToday = Validation.maxDateCheck(new String[] {"dob"}, inputValues, LocalDate.now());
+    if (!notAfterToday.getSuccess()) {
+      return notAfterToday;
+    }
+
     // Check fields that can only have fixed number of set values
     Validation genderCheck = Validation.fixedValuesCheck(new String[] {"gender"}, inputValues, User.genderOptions.keySet());
     if (!genderCheck.getSuccess()) {
@@ -262,6 +313,10 @@ public abstract class User {
 
   public String getGender() {
     return this.gender;
+  }
+
+  public LocalDate getDob() {
+    return this.dob;
   }
 
   public String getEmail() {
@@ -305,6 +360,10 @@ public abstract class User {
     updateUser();
   }
 
+  public void setDob(LocalDate dob) {
+    this.dob = dob;
+  }
+
   public void setEmail(String email) {
     this.email = email;
     updateUser();
@@ -336,6 +395,7 @@ public abstract class User {
     updatedUserProps.add(this.firstName);
     updatedUserProps.add(this.lastName);
     updatedUserProps.add(this.gender);
+    updatedUserProps.add(this.dob.format(Helper.dateTimeFormatter));
     updatedUserProps.add(this.email);
     updatedUserProps.add(this.phoneNumber);
     updatedUserProps.add(this.role);
@@ -365,6 +425,7 @@ public abstract class User {
     System.out.println("First Name: " + this.firstName);
     System.out.println("Last Name: " + this.lastName);
     System.out.println("Gender: " + this.gender);
+    System.out.println("Date of Birth" + this.dob);
     System.out.println("Email: " + this.email);
     System.out.println("Phone Number: " + this.phoneNumber);
     System.out.println("Role: " + this.role);

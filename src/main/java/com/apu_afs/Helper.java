@@ -1,9 +1,18 @@
 package com.apu_afs;
 
 import java.awt.Image;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import javax.swing.ImageIcon;
 
 public class Helper {
+
+  public static final String dateFormat = "dd-MM-yyyy";
+  public static final SimpleDateFormat simpleFormatter = new SimpleDateFormat(dateFormat); // for java.util.Date
+  public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat); // for java.time.LocalDate
 
   public static String firstLetterUpperCase(String string) {
     return string.substring(0, 1).toUpperCase() + string.substring(1);
@@ -14,4 +23,14 @@ public class Helper {
     ImageIcon newIcon = new ImageIcon(transformedImage);
     return newIcon;
   }
+
+  public static boolean isValidDate(String dateString) {
+    try {
+      LocalDate.parse(dateString, dateTimeFormatter);
+      return true;
+    } catch (DateTimeParseException e) {
+      return false;
+    }
+  }
+
 }

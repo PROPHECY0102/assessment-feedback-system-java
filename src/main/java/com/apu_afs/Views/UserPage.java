@@ -3,8 +3,11 @@ package com.apu_afs.Views;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,6 +25,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import com.apu_afs.GlobalState;
+import com.apu_afs.Helper;
 import com.apu_afs.Models.AcademicLeader;
 import com.apu_afs.Models.Admin;
 import com.apu_afs.Models.ComboBoxItem;
@@ -32,6 +36,7 @@ import com.apu_afs.Models.Validation;
 import com.apu_afs.Views.components.HeaderPanel;
 import com.apu_afs.Views.components.NavPanel;
 import com.apu_afs.Views.components.TextField;
+import com.toedter.calendar.JDateChooser;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -70,23 +75,29 @@ public class UserPage extends JPanel {
 
   ArrayList<ComboBoxItem> genderOptions;
 
-  JPanel genderEmailRow;
+  JPanel genderDobRow;
   JPanel genderFieldGroup;
   JLabel genderLabel;
   JComboBox<ComboBoxItem> genderComboBox;
   JLabel genderErrorLabel;
+  JPanel dobFieldGroup;
+  JLabel dobLabel;
+  JDateChooser dobDateChooser;
+  JLabel dobErrorLabel;
+
+  ArrayList<ComboBoxItem> roleOptions;
+
+  JPanel emailPhoneRow;
   JPanel emailFieldGroup;
   JLabel emailLabel;
   TextField emailField;
   JLabel emailErrorLabel;
-
-  ArrayList<ComboBoxItem> roleOptions;
-
-  JPanel phoneRoleRow;
   JPanel phoneNumberFieldGroup;
   JLabel phoneNumberLabel;
   TextField phoneNumberField;
   JLabel phoneNumberErrorLabel;
+
+  JPanel roleRow;
   JPanel roleFieldGroup;
   JLabel roleLabel;
   JComboBox<ComboBoxItem> roleComboBox;
@@ -101,6 +112,8 @@ public class UserPage extends JPanel {
   Map<String, TextField> textFields;
 
   Map<String, JComboBox<ComboBoxItem>> comboBoxes;
+
+  Map<String, JDateChooser> dateChoosers;
 
   Map<String, JLabel> errorLabels;
  
@@ -225,7 +238,7 @@ public class UserPage extends JPanel {
     genderComboBox = new JComboBox<>(genderOptions.stream().toArray(ComboBoxItem[]::new));
     genderComboBox.setBackground(App.slate200);
     genderComboBox.setBorder(BorderFactory.createCompoundBorder(genderComboBox.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
-    genderComboBox.setPreferredSize(new Dimension(600, 35));
+    genderComboBox.setPreferredSize(new Dimension(200, 35));
     genderComboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
       JLabel label = new JLabel();
       if (value != null) {
@@ -249,6 +262,26 @@ public class UserPage extends JPanel {
     genderFieldGroup.add(genderLabel);
     genderFieldGroup.add(genderComboBox);
     genderFieldGroup.add(genderErrorLabel);
+
+    dobLabel = new JLabel();
+    dobLabel.setText("Date of Birth: ");
+    dobDateChooser = new JDateChooser();
+    dobDateChooser.setDateFormatString(Helper.dateFormat);
+    dobDateChooser.setBackground(App.slate200);
+    dobDateChooser.getDateEditor().getUiComponent().setBackground(App.slate200);
+    dobDateChooser.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(dobDateChooser.getDateEditor().getUiComponent().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    dobDateChooser.setPreferredSize(new Dimension(200, 35));
+    // dobDateChooser.getDateEditor().getUiComponent().setPreferredSize(new Dimension(600, 35));
+    if (actionContext.equals("edit")) {
+      dobDateChooser.setDate(Date.from(editingUser.getDob().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    }
+    dobErrorLabel = new JLabel("\s");
+    dobErrorLabel.setForeground(App.red600);
+    dobFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    dobFieldGroup.setBackground(App.slate100);
+    dobFieldGroup.add(dobLabel);
+    dobFieldGroup.add(dobDateChooser);
+    dobFieldGroup.add(dobErrorLabel);
 
     emailLabel = new JLabel();
     emailLabel.setText("Email: ");
@@ -294,7 +327,7 @@ public class UserPage extends JPanel {
     roleComboBox = new JComboBox<>(roleOptions.stream().toArray(ComboBoxItem[]::new));
     roleComboBox.setBackground(App.slate200);
     roleComboBox.setBorder(BorderFactory.createCompoundBorder(roleComboBox.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
-    roleComboBox.setPreferredSize(new Dimension(600, 35));
+    roleComboBox.setPreferredSize(new Dimension(200, 35));
     roleComboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
       JLabel label = new JLabel();
       if (value != null) {
@@ -329,22 +362,27 @@ public class UserPage extends JPanel {
     firstLastNameRow.add(firstNameFieldGroup);
     firstLastNameRow.add(lastNameFieldGroup);
 
-    genderEmailRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
-    genderEmailRow.setBackground(App.slate100);
-    genderEmailRow.add(genderFieldGroup);
-    genderEmailRow.add(emailFieldGroup);
+    genderDobRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    genderDobRow.setBackground(App.slate100);
+    genderDobRow.add(genderFieldGroup, "width 50%");
+    genderDobRow.add(dobFieldGroup, "width 50%");
 
-    phoneRoleRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
-    phoneRoleRow.setBackground(App.slate100);
-    phoneRoleRow.add(phoneNumberFieldGroup);
-    phoneRoleRow.add(roleFieldGroup);
+    emailPhoneRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    emailPhoneRow.setBackground(App.slate100);
+    emailPhoneRow.add(emailFieldGroup);
+    emailPhoneRow.add(phoneNumberFieldGroup);
+
+    roleRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    roleRow.setBackground(App.slate100);
+    roleRow.add(roleFieldGroup);
 
     mainform = new JPanel(new MigLayout("insets 30 0, wrap 1, gapy 10"));
     mainform.setBackground(App.slate100);
     mainform.add(usernamePasswordRow, "width 100%");
     mainform.add(firstLastNameRow, "width 100%");
-    mainform.add(genderEmailRow, "width 100%");
-    mainform.add(phoneRoleRow, "width 100%");
+    mainform.add(genderDobRow, "width 100%");
+    mainform.add(emailPhoneRow, "width 100%");
+    mainform.add(roleRow, "width 100%");
 
     formTabbedPane = new JTabbedPane();
     formTabbedPane.addTab("User Information", mainform);
@@ -363,12 +401,17 @@ public class UserPage extends JPanel {
       Map.entry("role", roleComboBox)
     );
 
+    dateChoosers = Map.ofEntries(
+      Map.entry("dob", dobDateChooser)
+    );
+
     errorLabels = Map.ofEntries(
       Map.entry("username", usernameErrorLabel),
       Map.entry("password", passwordErrorLabel),
       Map.entry("firstName", firstNameErrorLabel),
       Map.entry("lastName", lastNameErrorLabel),
       Map.entry("gender", genderErrorLabel),
+      Map.entry("dob", dobErrorLabel),
       Map.entry("email", emailErrorLabel),
       Map.entry("phoneNumber", phoneNumberErrorLabel),
       Map.entry("role", roleErrorLabel)
@@ -391,6 +434,14 @@ public class UserPage extends JPanel {
       for (String comboBoxKey : comboBoxes.keySet()) {
         ComboBoxItem selectedComboBoxItem = (ComboBoxItem) comboBoxes.get(comboBoxKey).getSelectedItem();
         inputValues.put(comboBoxKey, selectedComboBoxItem.getValue());
+      }
+
+      for (String dateChooserKey : dateChoosers.keySet()) {
+        if (dateChoosers.get(dateChooserKey).getDate() == null) {
+          inputValues.put(dateChooserKey, "");
+        } else {
+          inputValues.put(dateChooserKey, Helper.simpleFormatter.format(dateChoosers.get(dateChooserKey).getDate()));
+        }
       }
 
       Validation inputValidation = User.validateUser(inputValues);
@@ -467,6 +518,8 @@ public class UserPage extends JPanel {
       textFields.get(validation.getField()).setBackground(App.red100);
     } else if (comboBoxes.get(validation.getField()) != null) {
       comboBoxes.get(validation.getField()).setBackground(App.red100);
+    } else if (dateChoosers.get(validation.getField()) != null) {
+      dateChoosers.get(validation.getField()).setBackground(App.red100);
     }
 
     if (errorLabels.get(validation.getField()) != null) {
