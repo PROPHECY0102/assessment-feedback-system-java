@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -15,7 +14,6 @@ import javax.swing.JPanel;
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
 import com.apu_afs.Models.NavOption;
-import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Views.App;
 import com.apu_afs.Views.Router;
 
@@ -60,7 +58,7 @@ public class NavPanel extends JPanel {
           navBtn.setBackground(App.blue900);
           navDisplayGroup.setBackground(App.blue900);
 
-          // selected page/current page will have a different background color
+          // selected page/current page nav button will have a different background color
           if (router.getCurrPage() == navOption.getPage()) {
             navBtn.setBackground(App.blue600);
             navDisplayGroup.setBackground(App.blue600);
@@ -71,8 +69,7 @@ public class NavPanel extends JPanel {
       navBtn.addActionListener(e -> {
         router.showView(navOption.getPage(), state);
       });
-
-      // selected page/current page will have a different background color
+      
       if (router.getCurrPage() == navOption.getPage()) {
         navBtn.setBackground(App.blue600);
         navDisplayGroup.setBackground(App.blue600);

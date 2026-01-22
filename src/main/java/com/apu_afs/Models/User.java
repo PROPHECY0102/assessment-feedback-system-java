@@ -179,7 +179,7 @@ public abstract class User {
     return users;
   }
 
-  public static List<User> fetchUsers(String search, List<String> roleConditions) {
+  public static List<User> fetchUsers(String search, Set<String> roleConditions) {
     List<String> usersData = Data.fetch(User.filePath);
     List<User> users = new ArrayList<>();
 

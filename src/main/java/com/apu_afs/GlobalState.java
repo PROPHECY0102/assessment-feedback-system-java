@@ -2,6 +2,7 @@ package com.apu_afs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Arrays;
 
 import com.apu_afs.Models.Data;
@@ -19,7 +20,7 @@ public class GlobalState {
 
   // use for searching and filtering
   private String userSearch;
-  private List<String> userRoleConditions;
+  private Set<String> userRoleConditions;
 
   private static final String filepath = "data/state.txt";
 
@@ -52,7 +53,7 @@ public class GlobalState {
     return this.userSearch;
   }
 
-  public List<String> getUserRoleConditions() {
+  public Set<String> getUserRoleConditions() {
     return this.userRoleConditions;
   }
 
@@ -74,7 +75,7 @@ public class GlobalState {
     this.userSearch = userSearch;
   }
 
-  public void setUserRoleConditions(List<String> userRoleConditions) {
+  public void setUserRoleConditions(Set<String> userRoleConditions) {
     this.userRoleConditions = userRoleConditions;
   }
 

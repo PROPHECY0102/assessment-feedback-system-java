@@ -3,25 +3,18 @@ package com.apu_afs.Views;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import com.apu_afs.GlobalState;

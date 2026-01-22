@@ -4,11 +4,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -70,7 +69,7 @@ public class ManageUsersPage extends JPanel {
   UserTableModel userTableModel;
 
   String searchInput;
-  List<String> roleConditions;
+  Set<String> roleConditions;
  
   private static final String[] allowedRoles = {"admin"};
   private static final String dataContext = "Users";
@@ -102,7 +101,7 @@ public class ManageUsersPage extends JPanel {
     searchInput = state.getUserSearch() != null ? state.getUserSearch() : "";
     roleConditions = state.getUserRoleConditions() != null ? 
         state.getUserRoleConditions() : 
-        Arrays.stream(Role.values()).map(Role::getValue).collect(Collectors.toList());
+        Arrays.stream(Role.values()).map(Role::getValue).collect(Collectors.toSet());
 
     searchField = new TextField("Search " + dataContext + "...");
     if (!searchInput.isEmpty()) {
@@ -120,6 +119,10 @@ public class ManageUsersPage extends JPanel {
     searchClearBtn.setBackground(App.red600);
     searchClearBtn.setFocusable(false);
     searchClearBtn.setBorder(BorderFactory.createCompoundBorder(searchClearBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    searchClearBtn.addActionListener(e -> {
+        state.clearState();
+        router.showView(Pages.MANAGEUSERS, state);
+    });
 
     searchBtn = new JButton();
     searchBtn.setText("Search");
@@ -151,6 +154,44 @@ public class ManageUsersPage extends JPanel {
     filterStudentCheckButton = new JCheckBox();
     filterStudentCheckButton.setText("Student");
     filterStudentCheckButton.setSelected(roleConditions.contains("student"));
+
+    Map<String, JCheckBox> filterCheckBoxes = Map.ofEntries(
+        Map.entry("admin", filterAdminCheckButton),
+        Map.entry("academic", filterAcademicCheckButton),
+        Map.entry("lecturer", filterLecturerCheckButton),
+        Map.entry("student", filterStudentCheckButton)
+    );
+
+    for (Map.Entry<String, JCheckBox> entry : filterCheckBoxes.entrySet()) {
+        String roleKey = entry.getKey();
+        JCheckBox checkBox = entry.getValue();
+        
+        checkBox.addActionListener(e -> {
+            if (checkBox.isSelected()) {
+                roleConditions.add(roleKey);
+            } else {
+                roleConditions.remove(roleKey);
+            }
+
+            state.setUserSearch(searchField.getText());
+            state.setUserRoleConditions(roleConditions);
+            router.showView(Pages.MANAGEUSERS, state);
+        });
+    }
+
+    searchBtn.addActionListener(e -> {
+        state.setUserSearch(searchField.getText());
+
+        roleConditions.clear();
+        for (String key : filterCheckBoxes.keySet()) {
+            if (filterCheckBoxes.get(key).isSelected()) {
+                roleConditions.add(key);
+            }
+        }
+
+        state.setUserRoleConditions(roleConditions);
+        router.showView(Pages.MANAGEUSERS, state);
+    });
 
     filterOptionsContainer = new JPanel(new MigLayout("insets 0, gapx 5"));
     filterOptionsContainer.setBackground(App.slate100);
