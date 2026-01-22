@@ -3,8 +3,10 @@ package com.apu_afs;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 
 import javax.swing.ImageIcon;
 
@@ -33,4 +35,10 @@ public class Helper {
     }
   }
 
+  public static Date convertLocalDateToDate(LocalDate localDate) {
+    if (localDate == null) {
+      return null;
+    }
+    return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+  }
 }

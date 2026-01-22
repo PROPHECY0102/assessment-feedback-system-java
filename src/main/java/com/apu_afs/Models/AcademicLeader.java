@@ -41,7 +41,7 @@ public class AcademicLeader extends User {
     this.employedAt = LocalDate.parse(inputValues.get("employedAt"), Helper.dateTimeFormatter);
   }
 
-  public static Validation validateAdmin(HashMap<String, String> inputValues) {
+  public static Validation validate(HashMap<String, String> inputValues) {
     Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"faculty"}, inputValues);
     if (!cannotBeEmptyCheck.getSuccess()) {
       return cannotBeEmptyCheck;
@@ -96,6 +96,7 @@ public class AcademicLeader extends User {
     }).collect(Collectors.toCollection(ArrayList::new));
 
     List<String> updatedProps = new ArrayList<String>();
+    updatedProps.add(this.ID);
     updatedProps.add(this.faculty);
     updatedProps.add(this.employmentType.getValue());
     updatedProps.add(this.employedAt.format(Helper.dateTimeFormatter));

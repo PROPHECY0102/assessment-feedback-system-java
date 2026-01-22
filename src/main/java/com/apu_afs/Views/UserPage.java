@@ -33,7 +33,9 @@ import com.apu_afs.Models.Lecturer;
 import com.apu_afs.Models.Student;
 import com.apu_afs.Models.User;
 import com.apu_afs.Models.Validation;
+import com.apu_afs.Models.Enums.EmploymentType;
 import com.apu_afs.Models.Enums.Gender;
+import com.apu_afs.Models.Enums.Mode;
 import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Models.Enums.Role;
 import com.apu_afs.Views.components.HeaderPanel;
@@ -87,9 +89,7 @@ public class UserPage extends JPanel {
   JLabel dobLabel;
   JDateChooser dobDateChooser;
   JLabel dobErrorLabel;
-
-  ArrayList<ComboBoxItem> roleOptions;
-
+  
   JPanel emailPhoneRow;
   JPanel emailFieldGroup;
   JLabel emailLabel;
@@ -100,16 +100,84 @@ public class UserPage extends JPanel {
   TextField phoneNumberField;
   JLabel phoneNumberErrorLabel;
 
+  ArrayList<ComboBoxItem> roleOptions;
+
   JPanel roleRow;
   JPanel roleFieldGroup;
   JLabel roleLabel;
   JComboBox<ComboBoxItem> roleComboBox;
   JLabel roleErrorLabel;
 
+  // admin detail fields
+  JPanel departmentRow;
+  JPanel departmentFieldGroup;
+  JLabel departmentLabel;
+  TextField departmentField;
+  JLabel departmentErrorLabel;
+
+  // employment type and employed at can be reused for admin, academic leader and lecturer
+  ArrayList<ComboBoxItem> employmentTypeOptions;
+
+  JPanel employmentInfoRow;
+  JPanel employmentTypeFieldGroup;
+  JLabel employmentTypeLabel;
+  JComboBox<ComboBoxItem> employmentTypeComboBox;
+  JLabel employmentTypeErrorLabel;
+  JPanel employedAtFieldGroup;
+  JLabel employedAtLabel;
+  JDateChooser employedAtDateChooser;
+  JLabel employedAtErrorLabel;
+
+  // academic leader detail fields
+  JPanel facultyRow;
+  JPanel facultyFieldGroup;
+  JLabel facultyLabel;
+  TextField facultyField;
+  JLabel facultyErrorLabel;
+
+  // lecturer detail fields
+  ArrayList<ComboBoxItem> academicLeaderList;
+
+  JPanel academicLeaderRow;
+  JPanel academicLeaderFieldGroup;
+  JLabel academicLeaderLabel;
+  JComboBox<ComboBoxItem> academicLeaderComboBox;
+  JLabel academicLeaderErrorLabel;
+
+  // student detail fields
+  ArrayList<ComboBoxItem> modeOptions;
+
+  JPanel programModeRow;
+  JPanel programFieldGroup;
+  JLabel programLabel;
+  TextField programField;
+  JLabel programErrorLabel;
+  JPanel modeFieldGroup;
+  JLabel modeLabel;
+  JComboBox<ComboBoxItem> modeComboBox;
+  JLabel modeErrorLabel;
+
+  JPanel cgpaCreditHoursRow;
+  JPanel cgpaFieldGroup;
+  JLabel cgpaLabel;
+  TextField cgpaField;
+  JLabel cgpaErrorLabel;
+  JPanel creditHoursFieldGroup;
+  JLabel creditHoursLabel;
+  TextField creditHoursField;
+  JLabel creditHoursErrorLabel;
+
+  JPanel enrolledAtRow;
+  JPanel enrolledAtFieldGroup;
+  JLabel enrolledAtLabel;
+  JDateChooser enrolledAtDateChooser;
+  JLabel enrolledAtErrorLabel;
+
   JPanel actionButtonGroup;
   JButton submitBtn;
   JButton deleteBtn;
 
+  String actionContext;
   User editingUser;
 
   Map<String, TextField> textFields;
@@ -140,7 +208,6 @@ public class UserPage extends JPanel {
         });
     }
 
-    String actionContext;
     if (state.getSelectedUserID() == null) {
       actionContext = "add";
       editingUser = null;
@@ -273,10 +340,10 @@ public class UserPage extends JPanel {
     dobDateChooser.setBackground(App.slate200);
     dobDateChooser.getDateEditor().getUiComponent().setBackground(App.slate200);
     dobDateChooser.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(dobDateChooser.getDateEditor().getUiComponent().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    dobDateChooser.getCalendarButton().setBorder(BorderFactory.createCompoundBorder(dobDateChooser.getCalendarButton().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
     dobDateChooser.setPreferredSize(new Dimension(200, 35));
-    // dobDateChooser.getDateEditor().getUiComponent().setPreferredSize(new Dimension(600, 35));
     if (actionContext.equals("edit")) {
-      dobDateChooser.setDate(Date.from(editingUser.getDob().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+      dobDateChooser.setDate(Helper.convertLocalDateToDate(editingUser.getDob()));
     }
     dobErrorLabel = new JLabel("\s");
     dobErrorLabel.setForeground(App.red600);
@@ -342,7 +409,7 @@ public class UserPage extends JPanel {
       for (int i = 0; i < roleComboBox.getItemCount(); i++) {
         ComboBoxItem item = roleComboBox.getItemAt(i);
         if (item.getValue().equals(editingUser.getRole().getValue())) {
-          roleComboBox.setSelectedIndex(i);
+          roleComboBox.setSelectedIndex(i); // will this trigger the action listener or does it have to be user select in the gui
           break;
         }
       }
@@ -387,8 +454,236 @@ public class UserPage extends JPanel {
     mainform.add(emailPhoneRow, "width 100%");
     mainform.add(roleRow, "width 100%");
 
+    departmentLabel = new JLabel();
+    departmentLabel.setText("Department: ");
+    departmentField = new TextField("Enter Department Here...");
+    departmentField.setBackground(App.slate200);
+    departmentField.setBorder(BorderFactory.createCompoundBorder(departmentField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    departmentField.setPreferredSize(new Dimension(600, 35));
+    departmentErrorLabel = new JLabel("\s");
+    departmentErrorLabel.setForeground(App.red600);
+    departmentFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    departmentFieldGroup.setBackground(App.slate100);
+    departmentFieldGroup.add(departmentLabel);
+    departmentFieldGroup.add(departmentField);
+    departmentFieldGroup.add(departmentErrorLabel);
+
+    employmentTypeOptions = new ArrayList<>();
+    for (EmploymentType employmentType : EmploymentType.values()) {
+      employmentTypeOptions.add(new ComboBoxItem(employmentType.getValue(), employmentType.getDisplay()));
+    }
+
+    employmentTypeLabel = new JLabel();
+    employmentTypeLabel.setText("Employment Type: ");
+    employmentTypeComboBox = new JComboBox<>(employmentTypeOptions.stream().toArray(ComboBoxItem[]::new));
+    employmentTypeComboBox.setBackground(App.slate200);
+    employmentTypeComboBox.setBorder(BorderFactory.createCompoundBorder(employmentTypeComboBox.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    employmentTypeComboBox.setPreferredSize(new Dimension(200, 35));
+    employmentTypeComboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+      JLabel label = new JLabel();
+      if (value != null) {
+        label.setText(value.getLabelText());
+      }
+      return label;
+    });
+    employmentTypeErrorLabel = new JLabel("\s");
+    employmentTypeErrorLabel.setForeground(App.red600);
+    employmentTypeFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    employmentTypeFieldGroup.setBackground(App.slate100);
+    employmentTypeFieldGroup.add(employmentTypeLabel);
+    employmentTypeFieldGroup.add(employmentTypeComboBox);
+    employmentTypeFieldGroup.add(employmentTypeErrorLabel);
+
+    employedAtLabel = new JLabel();
+    employedAtLabel.setText("Employed At: ");
+    employedAtDateChooser = new JDateChooser();
+    employedAtDateChooser.setDateFormatString(Helper.dateFormat);
+    employedAtDateChooser.setBackground(App.slate200);
+    employedAtDateChooser.getDateEditor().getUiComponent().setBackground(App.slate200);
+    employedAtDateChooser.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(employedAtDateChooser.getDateEditor().getUiComponent().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    employedAtDateChooser.getCalendarButton().setBorder(BorderFactory.createCompoundBorder(employedAtDateChooser.getCalendarButton().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    employedAtDateChooser.setPreferredSize(new Dimension(200, 35));
+    employedAtErrorLabel = new JLabel("\s");
+    employedAtErrorLabel.setForeground(App.red600);
+    employedAtFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    employedAtFieldGroup.setBackground(App.slate100);
+    employedAtFieldGroup.add(employedAtLabel);
+    employedAtFieldGroup.add(employedAtDateChooser);
+    employedAtFieldGroup.add(employedAtErrorLabel);
+
+    facultyLabel = new JLabel();
+    facultyLabel.setText("Faculty: ");
+    facultyField = new TextField("Enter Faculty Here...");
+    facultyField.setBackground(App.slate200);
+    facultyField.setBorder(BorderFactory.createCompoundBorder(facultyField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    facultyField.setPreferredSize(new Dimension(600, 35));
+    facultyErrorLabel = new JLabel("\s");
+    facultyErrorLabel.setForeground(App.red600);
+    facultyFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    facultyFieldGroup.setBackground(App.slate100);
+    facultyFieldGroup.add(facultyLabel);
+    facultyFieldGroup.add(facultyField);
+    facultyFieldGroup.add(facultyErrorLabel);
+
+    academicLeaderList = new ArrayList<>();
+    academicLeaderList.add(new ComboBoxItem("0", "Not Available (N/A)"));
+    for (User user : User.getListOfUsersByMatchingValues("role", Role.ACADEMIC_LEADER.getValue())) {
+      if (user instanceof AcademicLeader academicLeaderUser) {
+        academicLeaderList.add(new ComboBoxItem(academicLeaderUser.getID(), academicLeaderUser.getFirstName() + " " + academicLeaderUser.getLastName() + " - " + academicLeaderUser.getFaculty()));
+      }
+    }
+
+    academicLeaderLabel = new JLabel();
+    academicLeaderLabel.setText("Supervised by Academic Leader: ");
+    academicLeaderComboBox = new JComboBox<>(academicLeaderList.stream().toArray(ComboBoxItem[]::new));
+    academicLeaderComboBox.setBackground(App.slate200);
+    academicLeaderComboBox.setBorder(BorderFactory.createCompoundBorder(academicLeaderComboBox.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    academicLeaderComboBox.setPreferredSize(new Dimension(200, 35));
+    academicLeaderComboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+      JLabel label = new JLabel();
+      if (value != null) {
+        label.setText(value.getLabelText());
+      }
+      return label;
+    });
+    academicLeaderErrorLabel = new JLabel("\s");
+    academicLeaderErrorLabel.setForeground(App.red600);
+    academicLeaderFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    academicLeaderFieldGroup.setBackground(App.slate100);
+    academicLeaderFieldGroup.add(academicLeaderLabel);
+    academicLeaderFieldGroup.add(academicLeaderComboBox);
+    academicLeaderFieldGroup.add(academicLeaderErrorLabel);
+
+    programLabel = new JLabel();
+    programLabel.setText("Program: ");
+    programField = new TextField("Enter Program Here...");
+    programField.setBackground(App.slate200);
+    programField.setBorder(BorderFactory.createCompoundBorder(programField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    programField.setPreferredSize(new Dimension(600, 35));
+    programErrorLabel = new JLabel("\s");
+    programErrorLabel.setForeground(App.red600);
+    programFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    programFieldGroup.setBackground(App.slate100);
+    programFieldGroup.add(programLabel);
+    programFieldGroup.add(programField);
+    programFieldGroup.add(programErrorLabel);
+
+    modeOptions = new ArrayList<>();
+    for (Mode mode : Mode.values()) {
+      modeOptions.add(new ComboBoxItem(mode.getValue(), mode.getDisplay()));
+    }
+
+    modeLabel = new JLabel();
+    modeLabel.setText("Mode of Study: ");
+    modeComboBox = new JComboBox<>(modeOptions.stream().toArray(ComboBoxItem[]::new));
+    modeComboBox.setBackground(App.slate200);
+    modeComboBox.setBorder(BorderFactory.createCompoundBorder(modeComboBox.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    modeComboBox.setPreferredSize(new Dimension(200, 35));
+    modeComboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+      JLabel label = new JLabel();
+      if (value != null) {
+        label.setText(value.getLabelText());
+      }
+      return label;
+    });
+    modeErrorLabel = new JLabel("\s");
+    modeErrorLabel.setForeground(App.red600);
+    modeFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    modeFieldGroup.setBackground(App.slate100);
+    modeFieldGroup.add(modeLabel);
+    modeFieldGroup.add(modeComboBox);
+    modeFieldGroup.add(modeErrorLabel);
+
+    cgpaLabel = new JLabel();
+    cgpaLabel.setText("CGPA: ");
+    cgpaField = new TextField("Enter CGPA Here...");
+    cgpaField.setBackground(App.slate200);
+    cgpaField.setBorder(BorderFactory.createCompoundBorder(cgpaField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    cgpaField.setPreferredSize(new Dimension(600, 35));
+    cgpaErrorLabel = new JLabel("\s");
+    cgpaErrorLabel.setForeground(App.red600);
+    cgpaFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    cgpaFieldGroup.setBackground(App.slate100);
+    cgpaFieldGroup.add(cgpaLabel);
+    cgpaFieldGroup.add(cgpaField);
+    cgpaFieldGroup.add(cgpaErrorLabel);
+
+    creditHoursLabel = new JLabel();
+    creditHoursLabel.setText("Total Credit Hours: ");
+    creditHoursField = new TextField("Enter Credit Hours Here...");
+    creditHoursField.setBackground(App.slate200);
+    creditHoursField.setBorder(BorderFactory.createCompoundBorder(creditHoursField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    creditHoursField.setPreferredSize(new Dimension(600, 35));
+    creditHoursErrorLabel = new JLabel("\s");
+    creditHoursErrorLabel.setForeground(App.red600);
+    creditHoursFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    creditHoursFieldGroup.setBackground(App.slate100);
+    creditHoursFieldGroup.add(creditHoursLabel);
+    creditHoursFieldGroup.add(creditHoursField);
+    creditHoursFieldGroup.add(creditHoursErrorLabel);
+
+    enrolledAtLabel = new JLabel();
+    enrolledAtLabel.setText("Enrolled At: ");
+    enrolledAtDateChooser = new JDateChooser();
+    enrolledAtDateChooser.setDateFormatString(Helper.dateFormat);
+    enrolledAtDateChooser.setBackground(App.slate200);
+    enrolledAtDateChooser.getDateEditor().getUiComponent().setBackground(App.slate200);
+    enrolledAtDateChooser.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(enrolledAtDateChooser.getDateEditor().getUiComponent().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    enrolledAtDateChooser.getCalendarButton().setBorder(BorderFactory.createCompoundBorder(enrolledAtDateChooser.getCalendarButton().getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    enrolledAtDateChooser.setPreferredSize(new Dimension(200, 35));
+    enrolledAtErrorLabel = new JLabel("\s");
+    enrolledAtErrorLabel.setForeground(App.red600);
+    enrolledAtFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
+    enrolledAtFieldGroup.setBackground(App.slate100);
+    enrolledAtFieldGroup.add(enrolledAtLabel);
+    enrolledAtFieldGroup.add(enrolledAtDateChooser);
+    enrolledAtFieldGroup.add(enrolledAtErrorLabel);
+
+    departmentRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    departmentRow.setBackground(App.slate100);
+    departmentRow.add(departmentFieldGroup);
+
+    employmentInfoRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    employmentInfoRow.setBackground(App.slate100);
+    employmentInfoRow.add(employmentTypeFieldGroup, "width 50%");
+    employmentInfoRow.add(employedAtFieldGroup, "width 50%");
+
+    facultyRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    facultyRow.setBackground(App.slate100);
+    facultyRow.add(facultyFieldGroup);
+
+    academicLeaderRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    academicLeaderRow.setBackground(App.slate100);
+    academicLeaderRow.add(academicLeaderFieldGroup);
+
+    programModeRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    programModeRow.setBackground(App.slate100);
+    programModeRow.add(programFieldGroup, "width 50%");
+    programModeRow.add(modeFieldGroup, "width 50%");
+
+    cgpaCreditHoursRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    cgpaCreditHoursRow.setBackground(App.slate100);
+    cgpaCreditHoursRow.add(cgpaFieldGroup);
+    cgpaCreditHoursRow.add(creditHoursFieldGroup);
+
+    enrolledAtRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
+    enrolledAtRow.setBackground(App.slate100);
+    enrolledAtRow.add(enrolledAtFieldGroup);
+
+    subform = new JPanel(new MigLayout("insets 30 0, wrap 1, gapy 10"));
+    subform.setBackground(App.slate100);
+
     formTabbedPane = new JTabbedPane();
     formTabbedPane.addTab("User Information", mainform);
+    Role currRole = actionContext.equals("edit") ? editingUser.getRole() : Role.ADMIN;
+    formTabbedPane.addTab(currRole.getDisplay() + " Details", subform);
+
+    roleComboBox.addActionListener(e -> {
+      ComboBoxItem selectedRoleBoxItem = (ComboBoxItem) roleComboBox.getSelectedItem();
+      changeSubForm(Role.fromValue(selectedRoleBoxItem.getValue()));
+    });
+
+    changeSubForm(currRole);
 
     textFields = Map.ofEntries(
       Map.entry("username", usernameField),
@@ -396,16 +691,26 @@ public class UserPage extends JPanel {
       Map.entry("firstName", firstNameField),
       Map.entry("lastName", lastNameField),
       Map.entry("email", emailField),
-      Map.entry("phoneNumber", phoneNumberField)
+      Map.entry("phoneNumber", phoneNumberField),
+      Map.entry("department", departmentField),
+      Map.entry("faculty", facultyField),
+      Map.entry("program", programField),
+      Map.entry("cgpa", cgpaField),
+      Map.entry("creditHours", creditHoursField)
     );
 
     comboBoxes = Map.ofEntries(
       Map.entry("gender", genderComboBox),
-      Map.entry("role", roleComboBox)
+      Map.entry("role", roleComboBox),
+      Map.entry("employmentType", employmentTypeComboBox),
+      Map.entry("academicLeader", academicLeaderComboBox),
+      Map.entry("mode", modeComboBox)
     );
 
     dateChoosers = Map.ofEntries(
-      Map.entry("dob", dobDateChooser)
+      Map.entry("dob", dobDateChooser),
+      Map.entry("employedAt", employedAtDateChooser),
+      Map.entry("enrolledAt", enrolledAtDateChooser)
     );
 
     errorLabels = Map.ofEntries(
@@ -417,7 +722,17 @@ public class UserPage extends JPanel {
       Map.entry("dob", dobErrorLabel),
       Map.entry("email", emailErrorLabel),
       Map.entry("phoneNumber", phoneNumberErrorLabel),
-      Map.entry("role", roleErrorLabel)
+      Map.entry("role", roleErrorLabel),
+      Map.entry("department", departmentErrorLabel),
+      Map.entry("faculty", facultyErrorLabel),
+      Map.entry("program", programErrorLabel),
+      Map.entry("cgpa", cgpaErrorLabel),
+      Map.entry("creditHours", creditHoursErrorLabel),
+      Map.entry("employmentType", employmentTypeErrorLabel),
+      Map.entry("academicLeader", academicLeaderErrorLabel),
+      Map.entry("mode", modeErrorLabel),
+      Map.entry("employedAt", employedAtErrorLabel),
+      Map.entry("enrolledAt", enrolledAtErrorLabel)
     );
 
     submitBtn = new JButton();
@@ -447,9 +762,19 @@ public class UserPage extends JPanel {
         }
       }
 
+      String userRole = inputValues.get("role");
       Validation inputValidation = User.validateUser(inputValues);
-      if (inputValidation.getSuccess()) {
-        String userRole = inputValues.get("role");
+      Validation detailsValidation;
+      if (userRole.equals("admin")) {
+          detailsValidation = Admin.validate(inputValues);
+        } else if (userRole.equals("academic")) {
+          detailsValidation = AcademicLeader.validate(inputValues);
+        } else if (userRole.equals("lecturer")) {
+          detailsValidation = Lecturer.validate(inputValues);
+        } else {
+          detailsValidation = Student.validate(inputValues);
+        }
+      if (inputValidation.getSuccess() && detailsValidation.getSuccess()) {
         User user;
         if (userRole.equals("admin")) {
           user = new Admin(inputValues);
@@ -470,9 +795,17 @@ public class UserPage extends JPanel {
         JOptionPane.showMessageDialog(router, messageDialogContent, messageDialogTitle, JOptionPane.INFORMATION_MESSAGE);
         router.showView(Pages.USER, state);
       } else {
-        this.displayError(inputValidation);
-        String messageDialogTitle = actionContext.equals("edit") ? "Cannot edit User: " + editingUser.getID() : "Cannot create new User"; 
-        JOptionPane.showMessageDialog(router, inputValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
+        if (!inputValidation.getSuccess()) {
+          this.displayError(inputValidation);
+          String messageDialogTitle = actionContext.equals("edit") ? "Cannot edit User: " + editingUser.getID() : "Cannot create new User"; 
+          JOptionPane.showMessageDialog(router, inputValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!detailsValidation.getSuccess()) {
+          this.displayError(detailsValidation);
+          String messageDialogTitle = actionContext.equals("edit") ? "Cannot edit User: " + editingUser.getID() : "Cannot create new User"; 
+          JOptionPane.showMessageDialog(router, detailsValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
+        }
       }
     });
 
@@ -514,6 +847,142 @@ public class UserPage extends JPanel {
     this.add(contentBody, "span, grow");
 
     state.clearState();
+  }
+
+  private void resetSubFormFields() {
+    departmentField.setBackground(App.slate200);
+    departmentField.setText("");
+    departmentErrorLabel.setText("\s");
+
+    employmentTypeComboBox.setBackground(App.slate200);
+    employmentTypeComboBox.setSelectedIndex(0);
+    employmentTypeErrorLabel.setText("\s");
+
+    employedAtDateChooser.setBackground(App.slate200);
+    employedAtDateChooser.setDate(null);
+    employedAtErrorLabel.setText("\s");
+
+    facultyField.setBackground(App.slate200);
+    facultyField.setText("");
+    facultyErrorLabel.setText("\s");
+
+    academicLeaderComboBox.setBackground(App.slate200);
+    academicLeaderComboBox.setSelectedIndex(0);
+    academicLeaderErrorLabel.setText("\s");
+
+    programField.setBackground(App.slate200);
+    programField.setText("");
+    programErrorLabel.setText("\s");
+
+    modeComboBox.setBackground(App.slate200);
+    modeComboBox.setSelectedIndex(0);
+    modeErrorLabel.setText("\s");
+
+    cgpaField.setBackground(App.slate200);
+    cgpaField.setText("");
+    cgpaErrorLabel.setText("\s");
+    
+    creditHoursField.setBackground(App.slate200);
+    creditHoursField.setText("");
+    creditHoursErrorLabel.setText("\s");
+
+    enrolledAtDateChooser.setBackground(App.slate200);
+    enrolledAtDateChooser.setDate(null);
+    enrolledAtErrorLabel.setText("\s");
+
+    subform.removeAll();
+    formTabbedPane.remove(subform);
+    formTabbedPane.revalidate();
+    formTabbedPane.repaint();
+  }
+
+  private void changeSubForm(Role role) {
+    resetSubFormFields();
+    
+    if (role.getValue().equals(Role.ADMIN.getValue())) {
+      if (actionContext.equals("edit") && editingUser instanceof Admin editingAdmin) {
+        departmentField.setText(editingAdmin.getDepartment());
+        employedAtDateChooser.setDate(Helper.convertLocalDateToDate(editingAdmin.getEmployedAt()));
+
+        for (int i = 0; i < employmentTypeComboBox.getItemCount(); i++) {
+          ComboBoxItem item = employmentTypeComboBox.getItemAt(i);
+          if (item.getValue().equals(editingAdmin.getEmploymentType().getValue())) {
+            employmentTypeComboBox.setSelectedIndex(i);
+            break;
+          }
+        }
+      }
+
+      subform.add(departmentFieldGroup, "width 100%");
+      subform.add(employmentInfoRow, "width 100%");
+    } else if (role.getValue().equals(Role.ACADEMIC_LEADER.getValue())) {
+      if (actionContext.equals("edit") && editingUser instanceof AcademicLeader editingAcademicLeader) {
+        facultyField.setText(editingAcademicLeader.getFaculty());
+        employedAtDateChooser.setDate(Helper.convertLocalDateToDate(editingAcademicLeader.getEmployedAt()));
+
+        for (int i = 0; i < employmentTypeComboBox.getItemCount(); i++) {
+          ComboBoxItem item = employmentTypeComboBox.getItemAt(i);
+          if (item.getValue().equals(editingAcademicLeader.getEmploymentType().getValue())) {
+            employmentTypeComboBox.setSelectedIndex(i);
+            break;
+          }
+        }
+      }
+
+      subform.add(facultyFieldGroup, "width 100%");
+      subform.add(employmentInfoRow, "width 100%");
+    } else if (role.getValue().equals(Role.LECTURER.getValue())) {
+      if (actionContext.equals("edit") && editingUser instanceof Lecturer editingLecturer) {
+        employedAtDateChooser.setDate(Helper.convertLocalDateToDate(editingLecturer.getEmployedAt()));
+
+        if (editingLecturer.getAcademicLeader() == null) {
+          academicLeaderComboBox.setSelectedIndex(0);
+        } else {
+          for (int i = 0; i < academicLeaderComboBox.getItemCount(); i++) {
+            ComboBoxItem item = academicLeaderComboBox.getItemAt(i);
+            if (item.getValue().equals(editingLecturer.getAcademicLeader().getID())) {
+              academicLeaderComboBox.setSelectedIndex(i);
+              break;
+            }
+          }
+        }
+
+        for (int i = 0; i < employmentTypeComboBox.getItemCount(); i++) {
+          ComboBoxItem item = employmentTypeComboBox.getItemAt(i);
+          if (item.getValue().equals(editingLecturer.getEmploymentType().getValue())) {
+            employmentTypeComboBox.setSelectedIndex(i);
+            break;
+          }
+        }
+      }
+
+      subform.add(academicLeaderRow, "width 100%");
+      subform.add(employmentInfoRow, "width 100%");
+    } else if (role.getValue().equals(Role.STUDENT.getValue())) {
+      if (actionContext.equals("edit") && editingUser instanceof Student editingStudent) {
+        programField.setText(editingStudent.getProgram());
+        cgpaField.setText(String.valueOf(editingStudent.getCgpa()));
+        creditHoursField.setText(String.valueOf(editingStudent.getCreditHours()));
+
+        enrolledAtDateChooser.setDate(Helper.convertLocalDateToDate(editingStudent.getEnrolledAt()));
+
+        for (int i = 0; i < modeComboBox.getItemCount(); i++) {
+          ComboBoxItem item = modeComboBox.getItemAt(i);
+          if (item.getValue().equals(editingStudent.getMode().getValue())) {
+            modeComboBox.setSelectedIndex(i);
+            break;
+          }
+        }
+      }
+
+      subform.add(programModeRow, "width 100%");
+      subform.add(cgpaCreditHoursRow, "width 100%");
+      subform.add(enrolledAtRow, "width 100%");
+    }
+
+    formTabbedPane.add(role.getDisplay() + " Details", subform);
+    formTabbedPane.revalidate();
+    formTabbedPane.repaint();
   }
 
   private void displayError(Validation validation) {

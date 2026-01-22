@@ -48,6 +48,20 @@ public class Lecturer extends User {
     this.employedAt = LocalDate.parse(inputValues.get("employedAt"), Helper.dateTimeFormatter);
   }
 
+  public static Validation validate(HashMap<String, String> inputValues) {
+    Validation validDateCheck = Validation.validDateCheck(new String[] {"employedAt"}, inputValues);
+    if (!validDateCheck.getSuccess()) {
+      return validDateCheck;
+    }
+
+    Validation notAfterToday = Validation.maxDateCheck(new String[] {"employedAt"}, inputValues, LocalDate.now());
+    if (!notAfterToday.getSuccess()) {
+      return notAfterToday;
+    }
+
+    return new Validation("Success! No invalid input", true);
+  }
+
   public AcademicLeader getAcademicLeader() {
     return this.academicLeader;
   }
@@ -87,6 +101,7 @@ public class Lecturer extends User {
     }).collect(Collectors.toCollection(ArrayList::new));
 
     List<String> updatedProps = new ArrayList<String>();
+    updatedProps.add(this.ID);
     updatedProps.add(this.academicLeader == null ? "0" : this.academicLeader.ID);
     updatedProps.add(this.employmentType.getValue());
     updatedProps.add(this.employedAt.format(Helper.dateTimeFormatter));

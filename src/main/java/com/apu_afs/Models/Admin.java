@@ -43,7 +43,7 @@ public class Admin extends User {
     this.navOptions.add(new NavOption(Pages.MANAGEUSERS));
   }
 
-  public static Validation validateAdmin(HashMap<String, String> inputValues) {
+  public static Validation validate(HashMap<String, String> inputValues) {
     Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"department"}, inputValues);
     if (!cannotBeEmptyCheck.getSuccess()) {
       return cannotBeEmptyCheck;
@@ -101,6 +101,7 @@ public class Admin extends User {
     }).collect(Collectors.toCollection(ArrayList::new));
 
     List<String> updatedProps = new ArrayList<String>();
+    updatedProps.add(this.ID);
     updatedProps.add(this.department);
     updatedProps.add(this.employmentType.getValue());
     updatedProps.add(this.employedAt.format(Helper.dateTimeFormatter));

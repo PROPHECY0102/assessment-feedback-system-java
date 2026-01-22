@@ -144,5 +144,55 @@ public class Validation {
     return response;
   }
 
+  public static Validation validDoubleCheck(String[] columns, HashMap<String, String> inputValues) {
+    Validation response = new Validation(true);
+
+    for (String column : columns) {
+      try {
+        Double.parseDouble(inputValues.get(column));
+      } catch (NumberFormatException e) {
+        response.setMessage(Helper.firstLetterUpperCase(column) + " must be a valid number");
+        response.setSuccess(false);
+        response.setField(column);
+        break;
+      }
+    }
+
+    return response;
+  }
+
+  // only for fields that passed validDoubleCheck
+  public static Validation validPositiveDoubleCheck(String[] columns, HashMap<String, String> inputValues) {
+    Validation response = new Validation(true);
+
+    for (String column : columns) {
+      if (Double.parseDouble(inputValues.get(column)) < 0) {
+        response.setMessage(Helper.firstLetterUpperCase(column) + " cannot be a negative number");
+        response.setSuccess(false);
+        response.setField(column);
+        break;
+      }
+    }
+
+    return response;
+  }
+
+  // only for fields that passed validDoubleCheck
+  // range param is an array of two double [min, max] inclusive
+  public static Validation validRangeCheck(String[] columns, HashMap<String, String> inputValues, double[] range) {
+    Validation response = new Validation(true);
+
+    for (String column : columns) {
+      if (Double.parseDouble(inputValues.get(column)) <= range[0] || Double.parseDouble(inputValues.get(column)) >= range[1]) {
+        response.setMessage(Helper.firstLetterUpperCase(column) + " must be a number between " + String.valueOf(range[0]) + " to " + String.valueOf(range[1]));
+        response.setSuccess(false);
+        response.setField(column);
+        break;
+      }
+    }
+
+    return response;
+  }
+
 
 }
