@@ -112,21 +112,6 @@ public class Validation {
     return response;
   }
 
-  public static Validation fixedValuesCheck(String[] columns, HashMap<String, String> inputValues, Set<String> options) {
-    Validation response = new Validation(true);
-
-    for (String column : columns) {
-      if (!options.contains(inputValues.get(column))) {
-        response.setMessage(Helper.firstLetterUpperCase(column) + " must be value of (" + String.join(", ", options) + ")");
-        response.setSuccess(false);
-        response.setField(column);
-        break;
-      }
-    }
-
-    return response;
-  }
-
   public static Validation validDateCheck(String[] columns, HashMap<String, String> inputValues) {
     Validation response = new Validation(true);
 

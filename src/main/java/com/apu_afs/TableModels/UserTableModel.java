@@ -50,11 +50,11 @@ public class UserTableModel extends AbstractTableModel {
             case 2: return user.getPassword();
             case 3: return user.getFirstName();
             case 4: return user.getLastName();
-            case 5: return User.genderOptions.get(user.getGender());
+            case 5: return user.getGender().getDisplay();
             case 6: return user.getDob().format(Helper.dateTimeFormatter);
             case 7: return user.getEmail();
             case 8: return user.getPhoneNumber();
-            case 9: return User.roleOptions.get(user.getRole());
+            case 9: return user.getRole().getDisplay();
             default: return null;
         }
     }

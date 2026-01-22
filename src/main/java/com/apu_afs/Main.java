@@ -35,8 +35,8 @@ public class Main {
             UIManager.put("ComboBox.buttonBackground", App.slate200);
 
             new App(new GlobalState());
-        } catch( Exception ex ) {
-            System.err.println( "Failed to initialize FlatLaf" );
+        } catch( Exception e ) {
+            System.err.println( e.getMessage() );
         }
     }
 }

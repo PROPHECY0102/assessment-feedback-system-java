@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
 import com.apu_afs.Models.NavOption;
+import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Views.App;
-import com.apu_afs.Views.Pages;
 import com.apu_afs.Views.Router;
 
 import net.miginfocom.swing.MigLayout;

@@ -33,6 +33,9 @@ import com.apu_afs.Models.Lecturer;
 import com.apu_afs.Models.Student;
 import com.apu_afs.Models.User;
 import com.apu_afs.Models.Validation;
+import com.apu_afs.Models.Enums.Gender;
+import com.apu_afs.Models.Enums.Pages;
+import com.apu_afs.Models.Enums.Role;
 import com.apu_afs.Views.components.HeaderPanel;
 import com.apu_afs.Views.components.NavPanel;
 import com.apu_afs.Views.components.TextField;
@@ -131,7 +134,7 @@ public class UserPage extends JPanel {
             router.showView(Pages.LOGIN, state);
         });
         return;
-    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole())) {
+    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole().getValue())) {
         SwingUtilities.invokeLater(() -> {
             router.showView(Pages.DASHBOARD, state);
         });
@@ -229,8 +232,8 @@ public class UserPage extends JPanel {
     lastNameFieldGroup.add(lastNameErrorLabel);
 
     genderOptions = new ArrayList<>();
-    for (String key : User.genderOptions.keySet()) {
-      genderOptions.add(new ComboBoxItem(key, User.genderOptions.get(key)));
+    for (Gender gender : Gender.values()) {
+      genderOptions.add(new ComboBoxItem(gender.getValue(), gender.getDisplay()));
     }
 
     genderLabel = new JLabel();
@@ -249,7 +252,7 @@ public class UserPage extends JPanel {
     if (actionContext.equals("edit")) {
       for (int i = 0; i < genderComboBox.getItemCount(); i++) {
         ComboBoxItem item = genderComboBox.getItemAt(i);
-        if (item.getValue().equals(editingUser.getGender())) {
+        if (item.getValue().equals(editingUser.getGender().getValue())) {
           genderComboBox.setSelectedIndex(i);
           break;
         }
@@ -318,8 +321,8 @@ public class UserPage extends JPanel {
     phoneNumberFieldGroup.add(phoneNumberErrorLabel);
 
     roleOptions = new ArrayList<>();
-    for (String key : User.roleOptions.keySet()) {
-      roleOptions.add(new ComboBoxItem(key, User.roleOptions.get(key)));
+    for (Role role : Role.values()) {
+      roleOptions.add(new ComboBoxItem(role.getValue(), role.getDisplay()));
     }
 
     roleLabel = new JLabel();
@@ -338,7 +341,7 @@ public class UserPage extends JPanel {
     if (actionContext.equals("edit")) {
       for (int i = 0; i < roleComboBox.getItemCount(); i++) {
         ComboBoxItem item = roleComboBox.getItemAt(i);
-        if (item.getValue().equals(editingUser.getRole())) {
+        if (item.getValue().equals(editingUser.getRole().getValue())) {
           roleComboBox.setSelectedIndex(i);
           break;
         }
@@ -461,7 +464,7 @@ public class UserPage extends JPanel {
         user.updateUser();
         state.setSelectedUserID(user.getID());
 
-        String userInfoDisplay = "\nUser ID:" + user.getID() + "\nUsername: " + user.getUsername() + "\nRole: " + User.roleOptions.get(user.getRole());
+        String userInfoDisplay = "\nUser ID:" + user.getID() + "\nUsername: " + user.getUsername() + "\nRole: " + user.getRole().getDisplay();
         String messageDialogContent = actionContext.equals("edit") ? "Current User has been updated!" + userInfoDisplay : "New User has been created!" + userInfoDisplay;
         String messageDialogTitle = actionContext.equals("edit") ? "Success: Updated Selected User" : "Success: Created New User";
         JOptionPane.showMessageDialog(router, messageDialogContent, messageDialogTitle, JOptionPane.INFORMATION_MESSAGE);
@@ -484,7 +487,7 @@ public class UserPage extends JPanel {
       if (actionContext.equals("edit") && editingUser.getID().equals(state.getCurrUser().getID())) {
         JOptionPane.showMessageDialog(router, "This User cannot be deleted as it is used in the current session", "Error: Unable to delete current user", JOptionPane.ERROR_MESSAGE);
       } else if (actionContext.equals("edit")) {
-        String userInfoDisplay = "\nUser ID: " + editingUser.getID() + "\nUsername: " + editingUser.getUsername() + "\nRole: " + User.roleOptions.get(editingUser.getRole());
+        String userInfoDisplay = "\nUser ID: " + editingUser.getID() + "\nUsername: " + editingUser.getUsername() + "\nRole: " + editingUser.getRole().getDisplay();
         int choice = JOptionPane.showConfirmDialog(router, "Are you sure you want to delete this user?" + userInfoDisplay, "Delete This User Confirmation", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {

@@ -5,7 +5,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.apu_afs.Helper;
-import com.apu_afs.Views.Pages;
+import com.apu_afs.Models.Enums.Gender;
+import com.apu_afs.Models.Enums.Pages;
+import com.apu_afs.Models.Enums.Role;
 
 public abstract class User {
   String ID;
@@ -13,11 +15,11 @@ public abstract class User {
   String password;
   String firstName;
   String lastName;
-  String gender;
+  Gender gender;
   LocalDate dob;
   String email;
   String phoneNumber;
-  String role;
+  Role role;
 
   List<NavOption> navOptions;
 
@@ -34,18 +36,6 @@ public abstract class User {
     Map.entry("role", 9)
   );
 
-  public static final Map<String, String> genderOptions = Map.ofEntries(
-    Map.entry("male", "Male"),
-    Map.entry("female", "Female")
-  );
-
-  public static final Map<String, String> roleOptions = Map.ofEntries(
-    Map.entry("admin", "Admin"),
-    Map.entry("academic", "Academic Leader"),
-    Map.entry("lecturer", "Lecturer"),
-    Map.entry("student", "Student")
-  );
-
   public static final String filePath = "data/users.txt";
 
   public User(List<String> props) {
@@ -54,11 +44,11 @@ public abstract class User {
     this.password = props.get(columnLookup.get("password")).trim();
     this.firstName = props.get(columnLookup.get("firstName")).trim();
     this.lastName = props.get(columnLookup.get("lastName")).trim();
-    this.gender = props.get(columnLookup.get("gender")).trim();
+    this.gender = Gender.fromValue(props.get(columnLookup.get("gender")).trim());
     this.dob = LocalDate.parse(props.get(columnLookup.get("dob")).trim(), Helper.dateTimeFormatter);
     this.email = props.get(columnLookup.get("email")).trim();
     this.phoneNumber = props.get(columnLookup.get("phoneNumber")).trim();
-    this.role = props.get(columnLookup.get("role")).trim();
+    this.role = Role.fromValue(props.get(columnLookup.get("role")).trim());
     this.navOptions = new ArrayList<NavOption>(Arrays.asList(
       new NavOption(Pages.DASHBOARD)
     ));
@@ -80,28 +70,49 @@ public abstract class User {
     this.password = inputValues.get("password");
     this.firstName = inputValues.get("firstName");
     this.lastName = inputValues.get("lastName");
-    this.gender = inputValues.get("gender");
-    this.dob = LocalDate.parse(inputValues.get("dob").trim(), Helper.dateTimeFormatter);
+    this.gender = Gender.fromValue(inputValues.get("gender"));
+    this.dob = LocalDate.parse(inputValues.get("dob"), Helper.dateTimeFormatter);
     this.email = inputValues.get("email");
     this.phoneNumber = inputValues.get("phoneNumber");
-    this.role = inputValues.get("role");
+    this.role = Role.fromValue(inputValues.get("role"));
     this.navOptions = new ArrayList<NavOption>(Arrays.asList(
       new NavOption(Pages.DASHBOARD)
     ));
+  }
+
+  public List<String> fetchProps() {
+    Map<Role, String> filePaths = Map.ofEntries(
+      Map.entry(Role.ADMIN, Admin.filePath),
+      Map.entry(Role.ACADEMIC_LEADER, AcademicLeader.filePath),
+      Map.entry(Role.LECTURER, Lecturer.filePath),
+      Map.entry(Role.STUDENT, Student.filePath)
+    );
+
+    List<String> roleUsersData = Data.fetch(filePaths.get(this.getRole()));
+
+    for (String roleUser : roleUsersData) {
+      List<String> props = new ArrayList<>(Arrays.asList(roleUser.split(", ")));
+
+      if (props.get(columnLookup.get("id")).equals(this.getID())) {
+        return props;
+      }
+    }
+
+    return new ArrayList<>();
   }
 
   public static User userAuth(String username, String password) {
     List<String> usersData = Data.fetch(User.filePath);
 
     for (String user : usersData) {
-      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
 
       if (props.get(columnLookup.get("username")).trim().equals(username) && props.get(columnLookup.get("password")).trim().equals(password)) {
-        if (props.get(columnLookup.get("role")).trim().equals("admin")) {
+        if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
           return new Admin(props);
-        } else if (props.get(columnLookup.get("role")).trim().equals("academic")) {
+        } else if (props.get(columnLookup.get("role")).trim().equals(Role.ACADEMIC_LEADER.getValue())) {
           return new AcademicLeader(props);
-        } else if (props.get(columnLookup.get("role")).trim().equals("lecturer")) {
+        } else if (props.get(columnLookup.get("role")).trim().equals(Role.LECTURER.getValue())) {
           return new Lecturer(props);
         } else {
           return new Student(props);
@@ -116,14 +127,14 @@ public abstract class User {
     List<String> usersData = Data.fetch(User.filePath);
 
     for (String user : usersData) {
-      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
       
       if (props.get(columnLookup.get(column)).trim().equals(value)) {
-        if (props.get(columnLookup.get("role")).trim().equals("admin")) {
+        if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
           return new Admin(props);
-        } else if (props.get(columnLookup.get("role")).trim().equals("academic")) {
+        } else if (props.get(columnLookup.get("role")).trim().equals(Role.ACADEMIC_LEADER.getValue())) {
           return new AcademicLeader(props);
-        } else if (props.get(columnLookup.get("role")).trim().equals("lecturer")) {
+        } else if (props.get(columnLookup.get("role")).trim().equals(Role.LECTURER.getValue())) {
           return new Lecturer(props);
         } else {
           return new Student(props);
@@ -139,13 +150,13 @@ public abstract class User {
     List<User> users = new ArrayList<>();
 
     for (String user : usersData) {
-      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
       
-      if (props.get(columnLookup.get("role")).trim().equals("admin")) {
+      if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
         users.add(new Admin(props));
-      } else if (props.get(columnLookup.get("role")).trim().equals("academic")) {
+      } else if (props.get(columnLookup.get("role")).trim().equals(Role.ACADEMIC_LEADER.getValue())) {
         users.add(new AcademicLeader(props));
-      } else if (props.get(columnLookup.get("role")).trim().equals("lecturer")) {
+      } else if (props.get(columnLookup.get("role")).trim().equals(Role.LECTURER.getValue())) {
         users.add(new Lecturer(props));
       } else {
         users.add(new Student(props));
@@ -156,10 +167,10 @@ public abstract class User {
       Map<String, String> userValuesLookup = Map.ofEntries(
         Map.entry("firstName", user.getID()),
         Map.entry("lastName", user.getUsername()),
-        Map.entry("gender", user.getGender()),
+        Map.entry("gender", user.getGender().getValue()),
         Map.entry("email", user.getEmail()),
         Map.entry("phoneNumber", user.getPhoneNumber()),
-        Map.entry("role", user.getRole())
+        Map.entry("role", user.getRole().getValue())
       );
 
       return userValuesLookup.get(column).equals(value);
@@ -173,13 +184,13 @@ public abstract class User {
     List<User> users = new ArrayList<>();
 
     for (String user : usersData) {
-      List<String> props = new ArrayList<String>(Arrays.asList(user.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
       
-      if (props.get(columnLookup.get("role")).trim().equals("admin")) {
+      if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
         users.add(new Admin(props));
-      } else if (props.get(columnLookup.get("role")).trim().equals("academic")) {
+      } else if (props.get(columnLookup.get("role")).trim().equals(Role.ACADEMIC_LEADER.getValue())) {
         users.add(new AcademicLeader(props));
-      } else if (props.get(columnLookup.get("role")).trim().equals("lecturer")) {
+      } else if (props.get(columnLookup.get("role")).trim().equals(Role.LECTURER.getValue())) {
         users.add(new Lecturer(props));
       } else {
         users.add(new Student(props));
@@ -187,7 +198,7 @@ public abstract class User {
     }
 
     users = users.stream().filter(user -> {
-      return roleConditions.contains(user.getRole());
+      return roleConditions.contains(user.getRole().getValue());
     }).filter(user -> {
       return user.getUsername().toLowerCase().contains(search.toLowerCase());
     }).collect(Collectors.toList());
@@ -277,17 +288,6 @@ public abstract class User {
       return notAfterToday;
     }
 
-    // Check fields that can only have fixed number of set values
-    Validation genderCheck = Validation.fixedValuesCheck(new String[] {"gender"}, inputValues, User.genderOptions.keySet());
-    if (!genderCheck.getSuccess()) {
-      return genderCheck;
-    }
-
-    Validation roleCheck = Validation.fixedValuesCheck(new String[] {"role"}, inputValues, User.roleOptions.keySet());
-    if (!roleCheck.getSuccess()) {
-      return roleCheck;
-    }
-
     return new Validation("Success! No invalid input", true);
   }
 
@@ -311,7 +311,7 @@ public abstract class User {
     return this.lastName;
   }
 
-  public String getGender() {
+  public Gender getGender() {
     return this.gender;
   }
 
@@ -327,7 +327,7 @@ public abstract class User {
     return this.phoneNumber;
   }
 
-  public String getRole() {
+  public Role getRole() {
     return this.role;
   }
 
@@ -355,7 +355,7 @@ public abstract class User {
     updateUser();
   }
 
-  public void setGender(String gender) {
+  public void setGender(Gender gender) {
     this.gender = gender;
     updateUser();
   }
@@ -374,7 +374,7 @@ public abstract class User {
     updateUser();
   }
 
-  public void setRole(String role) {
+  public void setRole(Role role) {
     this.role = role;
     updateUser();
   }
@@ -394,11 +394,11 @@ public abstract class User {
     updatedUserProps.add(this.password);
     updatedUserProps.add(this.firstName);
     updatedUserProps.add(this.lastName);
-    updatedUserProps.add(this.gender);
+    updatedUserProps.add(this.gender.getValue());
     updatedUserProps.add(this.dob.format(Helper.dateTimeFormatter));
     updatedUserProps.add(this.email);
     updatedUserProps.add(this.phoneNumber);
-    updatedUserProps.add(this.role);
+    updatedUserProps.add(this.role.getValue());
 
     updatedUsersData.add(String.join(", ", updatedUserProps));
     Data.save(User.filePath, String.join("\n", updatedUsersData));
@@ -414,20 +414,5 @@ public abstract class User {
     }).collect(Collectors.toCollection(ArrayList::new));
 
     Data.save(User.filePath, String.join("\n", updatedUsersData));
-  }
-
-  // use for debugging remove in production
-  public void debug() {
-    System.out.println("User: ");
-    System.out.println("ID: " + this.ID);
-    System.out.println("Username: " + this.username);
-    System.out.println("Password: " + this.password);
-    System.out.println("First Name: " + this.firstName);
-    System.out.println("Last Name: " + this.lastName);
-    System.out.println("Gender: " + this.gender);
-    System.out.println("Date of Birth" + this.dob);
-    System.out.println("Email: " + this.email);
-    System.out.println("Phone Number: " + this.phoneNumber);
-    System.out.println("Role: " + this.role);
   }
 }

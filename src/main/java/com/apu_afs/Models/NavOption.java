@@ -1,6 +1,6 @@
 package com.apu_afs.Models;
 
-import com.apu_afs.Views.Pages;
+import com.apu_afs.Models.Enums.Pages;
 
 public class NavOption {
   private Pages page;

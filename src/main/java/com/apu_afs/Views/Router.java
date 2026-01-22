@@ -2,6 +2,7 @@ package com.apu_afs.Views;
 
 import javax.swing.JPanel;
 import com.apu_afs.GlobalState;
+import com.apu_afs.Models.Enums.Pages;
 
 import net.miginfocom.swing.MigLayout;
 

@@ -89,7 +89,7 @@ public class HeaderPanel extends JPanel {
     profileRoleLabel = new JLabel();
     profileRoleLabel.setLayout(new MigLayout("insets 0"));
     profileRoleLabel.setText(
-      state.getCurrUser().getFirstName() + " " + state.getCurrUser().getLastName() + ", " + Helper.firstLetterUpperCase(state.getCurrUser().getRole())
+      state.getCurrUser().getFirstName() + " " + state.getCurrUser().getLastName() + ", " + state.getCurrUser().getRole().getDisplay()
     );
     profileRoleLabel.setForeground(App.slate100);
     profileRoleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));

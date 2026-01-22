@@ -27,6 +27,8 @@ import javax.swing.table.JTableHeader;
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
 import com.apu_afs.Models.User;
+import com.apu_afs.Models.Enums.Pages;
+import com.apu_afs.Models.Enums.Role;
 import com.apu_afs.TableModels.UserTableModel;
 import com.apu_afs.Views.components.HeaderPanel;
 import com.apu_afs.Views.components.NavPanel;
@@ -85,7 +87,7 @@ public class ManageUsersPage extends JPanel {
             router.showView(Pages.LOGIN, state);
         });
         return;
-    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole())) {
+    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole().getValue())) {
         SwingUtilities.invokeLater(() -> {
             router.showView(Pages.DASHBOARD, state);
         });
@@ -98,7 +100,9 @@ public class ManageUsersPage extends JPanel {
     contentBody.setBackground(App.slate100);
 
     searchInput = state.getUserSearch() != null ? state.getUserSearch() : "";
-    roleConditions = state.getUserRoleConditions() != null ? state.getUserRoleConditions() : User.roleOptions.keySet().stream().collect(Collectors.toList());
+    roleConditions = state.getUserRoleConditions() != null ? 
+        state.getUserRoleConditions() : 
+        Arrays.stream(Role.values()).map(Role::getValue).collect(Collectors.toList());
 
     searchField = new TextField("Search " + dataContext + "...");
     if (!searchInput.isEmpty()) {

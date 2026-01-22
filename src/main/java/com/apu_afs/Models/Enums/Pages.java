@@ -1,4 +1,4 @@
-package com.apu_afs.Views;
+package com.apu_afs.Models.Enums;
 
 public enum Pages {
   LOGIN("Login"), 

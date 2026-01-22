@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
 import com.apu_afs.Models.User;
+import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Views.components.PasswordField;
 import com.apu_afs.Views.components.TextField;
 
