@@ -32,11 +32,11 @@ public class Student extends User {
   public Student(List<String> props) {
     super(props);
     List<String> studentProps = this.fetchProps();
-    this.program = studentProps.get(columnLookup.get("program"));
-    this.mode = Mode.fromValue(studentProps.get(columnLookup.get("mode")));
-    this.cgpa = Double.parseDouble(studentProps.get(columnLookup.get("cgpa")));
-    this.creditHours = Double.parseDouble(studentProps.get(columnLookup.get("creditHours")));
-    this.enrolledAt = LocalDate.parse(studentProps.get(columnLookup.get("enrolledAt")), Helper.dateTimeFormatter);
+    this.program = studentProps.get(columnLookup.get("program")).trim();
+    this.mode = Mode.fromValue(studentProps.get(columnLookup.get("mode")).trim());
+    this.cgpa = Double.parseDouble(studentProps.get(columnLookup.get("cgpa")).trim());
+    this.creditHours = Double.parseDouble(studentProps.get(columnLookup.get("creditHours")).trim());
+    this.enrolledAt = LocalDate.parse(studentProps.get(columnLookup.get("enrolledAt")).trim(), Helper.dateTimeFormatter);
   }
 
   public Student(HashMap<String, String> inputValues) {
