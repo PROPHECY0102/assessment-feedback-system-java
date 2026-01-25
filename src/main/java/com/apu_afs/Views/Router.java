@@ -30,6 +30,7 @@ public class Router extends JPanel {
       case Pages.DASHBOARD: return new DashboardPage(this, state);
       case Pages.MANAGEUSERS: return new ManageUsersPage(this, state);
       case Pages.USER: return new UserPage(this, state);
+      case Pages.MANAGEGRADES: return new ManageGradesPage(this, state);
       default: return new DashboardPage(this, state);
     }
   }

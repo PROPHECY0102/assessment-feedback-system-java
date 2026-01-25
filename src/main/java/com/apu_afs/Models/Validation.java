@@ -182,7 +182,7 @@ public class Validation {
     Validation response = new Validation(true);
 
     for (String column : columns) {
-      if (Double.parseDouble(inputValues.get(column)) <= range[0] || Double.parseDouble(inputValues.get(column)) >= range[1]) {
+      if (Double.parseDouble(inputValues.get(column)) < range[0] || Double.parseDouble(inputValues.get(column)) > range[1]) {
         response.setMessage(Helper.firstLetterUpperCase(column) + " must be a number between " + String.valueOf(range[0]) + " to " + String.valueOf(range[1]));
         response.setSuccess(false);
         response.setField(column);

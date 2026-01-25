@@ -2,8 +2,10 @@ package com.apu_afs.Models;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GradeRange {
   String ID;
@@ -33,15 +35,79 @@ public class GradeRange {
     this.max = Double.parseDouble(props.get(columnLookup.get("max")).trim());
   }
 
+  public GradeRange(HashMap<String, String> inputValues) {
+    String gradeRangeID;
+    if (inputValues.get("id") == null) {
+      IDIncrement idIncrement = new IDIncrement();
+      gradeRangeID = String.valueOf(idIncrement.getGradeRangeID());
+    } else {
+      gradeRangeID = inputValues.get("id");
+    }
+
+    this.ID = gradeRangeID;
+    this.grade = inputValues.get("grade");
+    this.description = inputValues.get("description");
+    this.points = Double.parseDouble(inputValues.get("points"));
+    this.min = Double.parseDouble(inputValues.get("min"));
+    this.max = Double.parseDouble(inputValues.get("max"));
+  }
+
+  public static GradeRange getGradeRangeByMatchingValue(String column, String value) {
+    List<String> gradesData = Data.fetch(GradeRange.filePath);
+
+    for (String gradeRangesRow : gradesData) {
+      List<String> props = new ArrayList<>(Arrays.asList(gradeRangesRow.split(", ")));
+      if (props.get(columnLookup.get(column)).trim().equals(value)) {
+        return new GradeRange(props);
+      }
+    }
+
+    return null;
+  }
+
   public static List<GradeRange> getListOfGradeRanges() {
     List<String> gradesData = Data.fetch(GradeRange.filePath);
     List<GradeRange> gradeRanges = new ArrayList<>();
 
-    for (String props : gradesData) {
-      gradeRanges.add(new GradeRange(Arrays.asList(props.split(", "))));
+    for (String gradeRangesRow : gradesData) {
+      gradeRanges.add(new GradeRange(Arrays.asList(gradeRangesRow.split(", "))));
     }
 
     return gradeRanges;
+  }
+
+  public static Validation validate(HashMap<String, String> inputValues) {
+    Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"grade", "description", "points", "min", "max"}, inputValues);
+    if (!cannotBeEmptyCheck.getSuccess()) {
+      return cannotBeEmptyCheck;
+    }
+
+    Validation maxLengthCheck = Validation.maxLengthCheck(new String[] {"grade"}, inputValues, 2);
+    if (!maxLengthCheck.getSuccess()) {
+      return maxLengthCheck;
+    }
+
+    GradeRange existingGrade = GradeRange.getGradeRangeByMatchingValue("grade", inputValues.get("grade"));
+    if (existingGrade != null && (inputValues.get("id") == null || !existingGrade.getID().equals(inputValues.get("id")))) {
+      return new Validation("Grade must be unique. '" + inputValues.get("grade") + "' already exist", false, "grade");
+    }
+
+    Validation validDoubleCheck = Validation.validDoubleCheck(new String[] {"points", "min", "max"}, inputValues);
+    if (!validDoubleCheck.getSuccess()) {
+      return validDoubleCheck;
+    }
+
+    Validation validGPACheck = Validation.validRangeCheck(new String[] {"points"}, inputValues, new double[] {0, 4});
+    if (!validGPACheck.getSuccess()) {
+      return validGPACheck;
+    }
+
+    Validation validMinMaxScores = Validation.validRangeCheck(new String[] {"min", "max"}, inputValues, new double[] {0, 100});
+    if (!validMinMaxScores.getSuccess()) {
+      return validMinMaxScores;
+    }
+
+    return new Validation("No Invalid inputs", true);
   }
 
   public String getID() {
@@ -92,17 +158,40 @@ public class GradeRange {
     this.min = min;
     update();
   }
-
+  
   public void setMax(double max) {
     this.max = max;
     update();
   }
 
   public void update() {
+    List<String> gradeRangesData = Data.fetch(filePath);
 
+    List<String> updatedGradeRangesData = gradeRangesData.stream().filter((gradeRangeRow) -> {
+      List<String> props = new ArrayList<String>(Arrays.asList(gradeRangeRow.split(", ")));
+      return !props.get(columnLookup.get("id")).trim().equals(this.ID);
+    }).collect(Collectors.toList());
+
+    List<String> updatedGradeRangeProps = new ArrayList<>();
+    updatedGradeRangeProps.add(this.ID);
+    updatedGradeRangeProps.add(this.grade);
+    updatedGradeRangeProps.add(this.description);
+    updatedGradeRangeProps.add(String.valueOf(this.points));
+    updatedGradeRangeProps.add(String.valueOf(this.min));
+    updatedGradeRangeProps.add(String.valueOf(this.max));
+
+    updatedGradeRangesData.add(String.join(", ", updatedGradeRangeProps));
+    Data.save(filePath, String.join("\n", updatedGradeRangesData));
   }
 
   public void delete() {
+    List<String> gradeRangesData = Data.fetch(filePath);
 
+    List<String> updatedGradeRangesData = gradeRangesData.stream().filter((gradeRangeRow) -> {
+      List<String> props = new ArrayList<String>(Arrays.asList(gradeRangeRow.split(", ")));
+      return !props.get(columnLookup.get("id")).trim().equals(this.ID);
+    }).collect(Collectors.toList());
+
+    Data.save(filePath, String.join("\n", updatedGradeRangesData));
   }
 }

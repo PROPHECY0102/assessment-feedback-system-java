@@ -384,11 +384,11 @@ public abstract class User {
     
     // To remove the existing user old records out of the users list
     List<String> updatedUsersData = usersData.stream().filter((userRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(userRow.split(", ")));
-      return !props.get(0).trim().equals(this.ID);
+      List<String> props = new ArrayList<>(Arrays.asList(userRow.split(", ")));
+      return !props.get(columnLookup.get("id")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
-    List<String> updatedUserProps = new ArrayList<String>();
+    List<String> updatedUserProps = new ArrayList<>();
     updatedUserProps.add(this.ID);
     updatedUserProps.add(this.username);
     updatedUserProps.add(this.password);
@@ -409,8 +409,8 @@ public abstract class User {
     
     // To remove the existing user old records out of the users list
     List<String> updatedUsersData = usersData.stream().filter((userRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(userRow.split(", ")));
-      return !props.get(0).trim().equals(this.ID);
+      List<String> props = new ArrayList<>(Arrays.asList(userRow.split(", ")));
+      return !props.get(columnLookup.get("id")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
     Data.save(User.filePath, String.join("\n", updatedUsersData));

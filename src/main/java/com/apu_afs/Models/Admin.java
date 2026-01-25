@@ -26,13 +26,18 @@ public class Admin extends User {
 
   public static final String filePath = "data/admins.txt";
   
+  private static final List<NavOption> additionalNavOptions = List.of(
+    new NavOption(Pages.MANAGEUSERS),
+    new NavOption(Pages.MANAGEGRADES)
+  );
+
   public Admin(List<String> props) {
     super(props);
     List<String> adminProps = this.fetchProps();
     this.department = adminProps.get(columnLookup.get("department")).trim();
     this.employmentType = EmploymentType.fromValue(adminProps.get(columnLookup.get("employmentType")).trim());
     this.employedAt = LocalDate.parse(adminProps.get(columnLookup.get("employedAt")).trim(), Helper.dateTimeFormatter);
-    this.navOptions.add(new NavOption(Pages.MANAGEUSERS));
+    this.navOptions.addAll(additionalNavOptions);
   }
 
   public Admin(HashMap<String, String> inputValues) {
@@ -40,7 +45,7 @@ public class Admin extends User {
     this.department = inputValues.get("department");
     this.employmentType = EmploymentType.fromValue(inputValues.get("employmentType"));
     this.employedAt = LocalDate.parse(inputValues.get("employedAt"), Helper.dateTimeFormatter);
-    this.navOptions.add(new NavOption(Pages.MANAGEUSERS));
+    this.navOptions.addAll(additionalNavOptions);
   }
 
   public static Validation validate(HashMap<String, String> inputValues) {
@@ -96,11 +101,11 @@ public class Admin extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
-    List<String> updatedProps = new ArrayList<String>();
+    List<String> updatedProps = new ArrayList<>();
     updatedProps.add(this.ID);
     updatedProps.add(this.department);
     updatedProps.add(this.employmentType.getValue());
@@ -117,7 +122,7 @@ public class Admin extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 

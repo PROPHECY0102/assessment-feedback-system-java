@@ -4,7 +4,8 @@ public enum Pages {
   LOGIN("Login"), 
   DASHBOARD("Dashboard"),
   MANAGEUSERS("Manage Users"),
-  USER("User Form");
+  USER("User Form"),
+  MANAGEGRADES("Manage Grades");
 
   private final String display;
 

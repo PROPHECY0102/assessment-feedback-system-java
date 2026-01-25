@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.apu_afs.Helper;
 import com.apu_afs.Models.Enums.EmploymentType;
+import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Models.Enums.Role;
 
 public class AcademicLeader extends User {
@@ -25,6 +26,8 @@ public class AcademicLeader extends User {
   );
 
   public static final String filePath = "data/academicLeaders.txt";
+
+  private static final List<NavOption> additionalNavOptions = List.of();
   
   public AcademicLeader(List<String> props) {
     super(props);
@@ -32,6 +35,7 @@ public class AcademicLeader extends User {
     this.faculty = academicProps.get(columnLookup.get("faculty")).trim();
     this.employmentType = EmploymentType.fromValue(academicProps.get(columnLookup.get("employmentType")).trim());
     this.employedAt = LocalDate.parse(academicProps.get(columnLookup.get("employedAt")).trim(), Helper.dateTimeFormatter);
+    this.navOptions.addAll(additionalNavOptions);
   }
 
   public AcademicLeader(HashMap<String, String> inputValues) {
@@ -39,6 +43,7 @@ public class AcademicLeader extends User {
     this.faculty = inputValues.get("faculty");
     this.employmentType = EmploymentType.fromValue(inputValues.get("employmentType"));
     this.employedAt = LocalDate.parse(inputValues.get("employedAt"), Helper.dateTimeFormatter);
+    this.navOptions.addAll(additionalNavOptions);
   }
 
   public static Validation validate(HashMap<String, String> inputValues) {
@@ -91,11 +96,11 @@ public class AcademicLeader extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
-    List<String> updatedProps = new ArrayList<String>();
+    List<String> updatedProps = new ArrayList<>();
     updatedProps.add(this.ID);
     updatedProps.add(this.faculty);
     updatedProps.add(this.employmentType.getValue());
@@ -112,7 +117,7 @@ public class AcademicLeader extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 

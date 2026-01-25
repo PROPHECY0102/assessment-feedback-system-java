@@ -174,11 +174,8 @@ public class UserPage extends JPanel {
   User editingUser;
 
   Map<String, TextField> textFields;
-
   Map<String, JComboBox<ComboBoxItem>> comboBoxes;
-
   Map<String, JDateChooser> dateChoosers;
-
   Map<String, JLabel> errorLabels;
  
   private static final String[] allowedRoles = {"admin"};

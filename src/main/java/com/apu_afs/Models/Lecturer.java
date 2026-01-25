@@ -26,6 +26,8 @@ public class Lecturer extends User {
   );
 
   public static final String filePath = "data/lecturers.txt";
+
+  private static final List<NavOption> additionalNavOptions = List.of();
   
   public Lecturer(List<String> props) {
     super(props);
@@ -36,6 +38,7 @@ public class Lecturer extends User {
     }
     this.employmentType = EmploymentType.fromValue(lecturerProps.get(columnLookup.get("employmentType")).trim());
     this.employedAt = LocalDate.parse(lecturerProps.get(columnLookup.get("employedAt")).trim(), Helper.dateTimeFormatter);
+    this.navOptions.addAll(additionalNavOptions);
   }
 
   public Lecturer(HashMap<String, String> inputValues) {
@@ -46,6 +49,7 @@ public class Lecturer extends User {
     }
     this.employmentType = EmploymentType.fromValue(inputValues.get("employmentType"));
     this.employedAt = LocalDate.parse(inputValues.get("employedAt"), Helper.dateTimeFormatter);
+    this.navOptions.addAll(additionalNavOptions);
   }
 
   public static Validation validate(HashMap<String, String> inputValues) {
@@ -96,11 +100,11 @@ public class Lecturer extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
-    List<String> updatedProps = new ArrayList<String>();
+    List<String> updatedProps = new ArrayList<>();
     updatedProps.add(this.ID);
     updatedProps.add(this.academicLeader == null ? "0" : this.academicLeader.ID);
     updatedProps.add(this.employmentType.getValue());
@@ -117,7 +121,7 @@ public class Lecturer extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
