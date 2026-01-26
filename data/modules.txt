@@ -1,0 +1,2 @@
+1, SWE-2101, Software Engineering, 3.0, 12-08-2018, 5, 0
+2, NET-2132, Data Communication and Networking, 4.0, 26-09-2016, 3, 2
