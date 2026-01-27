@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
+import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Views.App;
 import com.apu_afs.Views.Router;
 
@@ -99,6 +100,9 @@ public class HeaderPanel extends JPanel {
     editProfileBtn.setBorder(BorderFactory.createCompoundBorder(editProfileBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
     editProfileBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
     editProfileBtn.setFocusable(false);
+    editProfileBtn.addActionListener(e -> {
+      router.showView(Pages.PROFILE, state);
+    });
     
     editProfileContainer = new JPanel(new MigLayout("insets 0"));
     editProfileContainer.setBackground(App.slate900);

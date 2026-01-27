@@ -291,6 +291,58 @@ public abstract class User {
     return new Validation("Success! No invalid input", true);
   }
 
+  public static Validation validateEditingProfile(HashMap<String, String> inputValues) {
+    Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"username", "email", "phoneNumber"}, inputValues);
+    if (!cannotBeEmptyCheck.getSuccess()) {
+      return cannotBeEmptyCheck;
+    }
+
+    // Username must be unique
+    User existingUser = User.getUserByMatchingValues("username", inputValues.get("username"));
+    if (existingUser != null && (inputValues.get("id") == null || !existingUser.getID().equals(inputValues.get("id")))) {
+      return new Validation("Username must be unique. '" + inputValues.get("username") + "' already exist", false, "username");
+    }
+
+    // Fields must have minimum length of
+    Validation usernameMinLengthCheck = Validation.minLengthCheck(new String[] {"username"}, inputValues, 3);
+    if (!usernameMinLengthCheck.getSuccess()) {
+      return usernameMinLengthCheck;
+    }
+
+    // Fields cannot exceeds maximum length of
+    Validation maxLengthCheck16 = Validation.maxLengthCheck(new String[] {"phoneNumber"}, inputValues, 16);
+    if (!maxLengthCheck16.getSuccess()) {
+      return maxLengthCheck16;
+    }
+
+    Validation maxLengthCheck32 = Validation.maxLengthCheck(new String[] {"username"}, inputValues, 32);
+    if (!maxLengthCheck32.getSuccess()) {
+      return maxLengthCheck32;
+    }
+
+    Validation maxLengthCheck64 = Validation.maxLengthCheck(new String[] {"email"}, inputValues, 64);
+    if (!maxLengthCheck64.getSuccess()) {
+      return maxLengthCheck64;
+    }
+
+    // Check if fields match a given regex pattern
+    Validation usernameRegexCheck = Validation.regexCheck(new String[] {"username"}, inputValues, "^[A-Za-z][A-Za-z0-9_]*$", "Must only contain Alphabets, Numerics and Underscores");
+    if (!usernameRegexCheck.getSuccess()) {
+      return usernameRegexCheck;
+    }
+
+    Validation emailRegexCheck = Validation.regexCheck(new String[] {"email"}, inputValues, "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", "must be a valid email address");
+    if (!emailRegexCheck.getSuccess()) {
+      return emailRegexCheck;
+    }
+
+    return new Validation("Success! No invalid input", true);
+  }
+
+  // public static Validation validateNewPassword(String username, HashMap<String, String> inputValues) {
+
+  // }
+
   public String getID() {
     return this.ID;
   }
