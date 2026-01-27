@@ -786,15 +786,11 @@ public class UserPage extends JPanel {
         router.showView(Pages.USER, state);
       } else {
         if (!inputValidation.getSuccess()) {
-          this.displayError(inputValidation);
-          String messageDialogTitle = actionContext.equals("edit") ? "Cannot edit User: " + editingUser.getID() : "Cannot create new User"; 
-          JOptionPane.showMessageDialog(router, inputValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
+          this.displayError(router, inputValidation);
         }
 
         if (!detailsValidation.getSuccess()) {
-          this.displayError(detailsValidation);
-          String messageDialogTitle = actionContext.equals("edit") ? "Cannot edit User: " + editingUser.getID() : "Cannot create new User"; 
-          JOptionPane.showMessageDialog(router, detailsValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
+          this.displayError(router, detailsValidation);
         }
       }
     });
@@ -975,7 +971,7 @@ public class UserPage extends JPanel {
     formTabbedPane.repaint();
   }
 
-  private void displayError(Validation validation) {
+  private void displayError(Router router, Validation validation) {
     if (textFields.get(validation.getField()) != null) {
       textFields.get(validation.getField()).setBackground(App.red100);
     } else if (comboBoxes.get(validation.getField()) != null) {
@@ -987,5 +983,8 @@ public class UserPage extends JPanel {
     if (errorLabels.get(validation.getField()) != null) {
       errorLabels.get(validation.getField()).setText(validation.getMessage());
     }
+
+    String messageDialogTitle = actionContext.equals("edit") ? "Cannot edit User: " + editingUser.getID() : "Cannot create new User"; 
+    JOptionPane.showMessageDialog(router, validation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
   }
 }

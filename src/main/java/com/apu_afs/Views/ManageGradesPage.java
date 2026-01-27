@@ -113,7 +113,7 @@ public class ManageGradesPage extends JPanel {
     header = new HeaderPanel(router, state);
     nav = new NavPanel(router, state);
 
-    contentBody = new JPanel(new MigLayout("insets 20 20, wrap 1, gapy 40"));
+    contentBody = new JPanel(new MigLayout("insets 20 20, wrap 1, gapy 40, align center center"));
     contentBody.setBackground(App.slate100);
 
     title = new JLabel("Define APU Grading System");
@@ -392,13 +392,13 @@ public class ManageGradesPage extends JPanel {
     gradeTableContainer.add(clearSelectionBtn, "alignx right");
     gradeTableContainer.add(scrollPane);
 
-    gradeFormTableContainer = new JPanel(new MigLayout("insets 0, fillx, gapx 10"));
+    gradeFormTableContainer = new JPanel(new MigLayout("insets 0, fillx, gapx 50"));
     gradeFormTableContainer.setBackground(App.slate100);
     gradeFormTableContainer.add(gradeForm, "growx");
     gradeFormTableContainer.add(gradeTableContainer, "growx, pushx");
 
     contentBody.add(titleContainer);
-    contentBody.add(gradeFormTableContainer, "grow, push");
+    contentBody.add(gradeFormTableContainer);
 
     this.add(header, "span, growx, wrap");
     this.add(nav, "growy");

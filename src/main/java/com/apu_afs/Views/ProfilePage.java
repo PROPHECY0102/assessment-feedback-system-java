@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -27,6 +27,7 @@ import com.apu_afs.Models.ComboBoxItem;
 import com.apu_afs.Models.Lecturer;
 import com.apu_afs.Models.Student;
 import com.apu_afs.Models.User;
+import com.apu_afs.Models.Validation;
 import com.apu_afs.Models.Enums.EmploymentType;
 import com.apu_afs.Models.Enums.Mode;
 import com.apu_afs.Models.Enums.Pages;
@@ -157,8 +158,6 @@ public class ProfilePage extends JPanel {
   JButton logoutBtn;
 
   Map<String, TextField> textFields;
-  Map<String, JComboBox<ComboBoxItem>> comboBoxes;
-  Map<String, JDateChooser> dateChoosers;
   Map<String, JLabel> errorLabels;
 
   public ProfilePage(Router router, GlobalState state) {
@@ -178,7 +177,7 @@ public class ProfilePage extends JPanel {
     header = new HeaderPanel(router, state);
     nav = new NavPanel(router, state);
 
-    contentBody = new JPanel(new MigLayout("insets 20 20, wrap 1, gapy 10"));
+    contentBody = new JPanel(new MigLayout("insets 20 20, wrap 1, gapy 10, align center center"));
     contentBody.setBackground(App.slate100);
 
     profileImage = new JLabel();
@@ -499,8 +498,8 @@ public class ProfilePage extends JPanel {
 
     employmentInfoRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
     employmentInfoRow.setBackground(App.slate100);
-    employmentInfoRow.add(employmentTypeFieldGroup, "width 50%");
-    employmentInfoRow.add(employedAtFieldGroup, "width 50%");
+    employmentInfoRow.add(employmentTypeFieldGroup);
+    employmentInfoRow.add(employedAtFieldGroup);
 
     facultyRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
     facultyRow.setBackground(App.slate100);
@@ -512,8 +511,8 @@ public class ProfilePage extends JPanel {
 
     programModeRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
     programModeRow.setBackground(App.slate100);
-    programModeRow.add(programFieldGroup, "width 50%");
-    programModeRow.add(modeFieldGroup, "width 50%");
+    programModeRow.add(programFieldGroup);
+    programModeRow.add(modeFieldGroup);
 
     cgpaCreditHoursRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
     cgpaCreditHoursRow.setBackground(App.slate100);
@@ -621,6 +620,14 @@ public class ProfilePage extends JPanel {
       Map.entry("phoneNumber", phoneNumberField)
     );
 
+    errorLabels = Map.ofEntries(
+      Map.entry("username", usernameErrorLabel),
+      Map.entry("currentPassword", currentPasswordErrorLabel),
+      Map.entry("newPassword", newPasswordErrorLabel),
+      Map.entry("email", emailErrorLabel),
+      Map.entry("phoneNumber", phoneNumberErrorLabel)
+    );
+
     editBtn = new JButton();
     editBtn.setText("Edit");
     editBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/header-edit-profile.png"), 18, 18));
@@ -635,7 +642,21 @@ public class ProfilePage extends JPanel {
         inputValues.put(key, textFields.get(key).getText().trim());
       }
 
+      Validation profileValidation = User.validateEditingProfile(inputValues, state.getCurrUser().getUsername());
+      if (profileValidation.getSuccess()) {
+        state.getCurrUser().setUsername(inputValues.get("username"));
+        state.getCurrUser().setEmail(inputValues.get("email"));
+        state.getCurrUser().setPhoneNumber(inputValues.get("phoneNumber"));
 
+        if (!inputValues.get("currentPassword").isEmpty()) {
+          state.getCurrUser().setPassword(inputValues.get("newPassword"));
+        }
+
+        router.showView(Pages.PROFILE, state);
+        JOptionPane.showMessageDialog(router, "Your Profile information has been successfully edited!", "Success: Edited Profile", JOptionPane.INFORMATION_MESSAGE);
+      } else {
+        this.displayError(router, profileValidation);
+      }
     });
 
     logoutBtn = new JButton();
@@ -648,7 +669,8 @@ public class ProfilePage extends JPanel {
     logoutBtn.setFocusable(false);
     logoutBtn.addActionListener(e -> {
       state.hardResetState();
-      
+      router.showView(Pages.LOGIN, state);
+      JOptionPane.showMessageDialog(router, "You have successfully logout from AFS!", "AFS | Logout", JOptionPane.INFORMATION_MESSAGE);
     });
 
     actionButtonGroup = new JPanel(new MigLayout("insets 50 0, aligny center"));
@@ -670,4 +692,16 @@ public class ProfilePage extends JPanel {
     state.clearState();
   }
   
+  private void displayError(Router router, Validation validation) {
+    if (textFields.get(validation.getField()) != null) {
+      textFields.get(validation.getField()).setBackground(App.red100);
+    }
+
+    if (errorLabels.get(validation.getField()) != null) {
+      errorLabels.get(validation.getField()).setText(validation.getMessage());
+    }
+
+    String messageDialogTitle = "Cannot edit profile"; 
+    JOptionPane.showMessageDialog(router, validation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
+  }
 }

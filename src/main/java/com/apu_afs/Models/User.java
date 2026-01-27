@@ -291,7 +291,7 @@ public abstract class User {
     return new Validation("Success! No invalid input", true);
   }
 
-  public static Validation validateEditingProfile(HashMap<String, String> inputValues) {
+  public static Validation validateEditingProfile(HashMap<String, String> inputValues, String username) {
     Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"username", "email", "phoneNumber"}, inputValues);
     if (!cannotBeEmptyCheck.getSuccess()) {
       return cannotBeEmptyCheck;
@@ -299,7 +299,7 @@ public abstract class User {
 
     // Username must be unique
     User existingUser = User.getUserByMatchingValues("username", inputValues.get("username"));
-    if (existingUser != null && (inputValues.get("id") == null || !existingUser.getID().equals(inputValues.get("id")))) {
+    if (existingUser != null && !existingUser.getUsername().equals(username)) {
       return new Validation("Username must be unique. '" + inputValues.get("username") + "' already exist", false, "username");
     }
 
@@ -336,12 +336,50 @@ public abstract class User {
       return emailRegexCheck;
     }
 
+    if (!inputValues.get("currentPassword").isEmpty()) {
+      User currUser = User.userAuth(username, inputValues.get("currentPassword"));
+      if (currUser == null) {
+        return new Validation("Your current password is invalid!", false, "currentPassword");
+      }
+
+      Validation newPasswordCannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"newPassword"}, inputValues);
+      if (!newPasswordCannotBeEmptyCheck.getSuccess()) {
+        return newPasswordCannotBeEmptyCheck;
+      }
+
+      Validation passwordMinLengthCheck = Validation.minLengthCheck(new String[] {"newPassword"}, inputValues, 6);
+      if (!passwordMinLengthCheck.getSuccess()) {
+        return passwordMinLengthCheck;
+      }
+
+      Validation newPasswordMaxLength32 = Validation.maxLengthCheck(new String[] {"newPassword"}, inputValues, 32);
+      if (!newPasswordMaxLength32.getSuccess()) {
+        return newPasswordMaxLength32;
+      }
+
+      Validation passwordOneLowerCase = Validation.regexCheck(new String[] {"newPassword"}, inputValues, ".*[a-z].*", "must contain at least one lowercase alphabet letter");
+      if (!passwordOneLowerCase.getSuccess()) {
+        return passwordOneLowerCase;
+      }
+
+      Validation passwordOneUpperCase = Validation.regexCheck(new String[] {"newPassword"}, inputValues, ".*[A-Z].*", "must contain at least one uppercase alphabet letter");
+      if (!passwordOneUpperCase.getSuccess()) {
+        return passwordOneUpperCase;
+      }
+
+      Validation passwordOneNumeric = Validation.regexCheck(new String[] {"newPassword"}, inputValues, ".*[0-9].*", "must contain at least one numeric");
+      if (!passwordOneNumeric.getSuccess()) {
+        return passwordOneNumeric;
+      }
+
+      Validation passwordOneSpecialCharacter = Validation.regexCheck(new String[] {"newPassword"}, inputValues, ".*[^a-zA-Z0-9].*", "must contain at least one special characters.");
+      if (!passwordOneSpecialCharacter.getSuccess()) {
+        return passwordOneSpecialCharacter;
+      }
+    }
+
     return new Validation("Success! No invalid input", true);
   }
-
-  // public static Validation validateNewPassword(String username, HashMap<String, String> inputValues) {
-
-  // }
 
   public String getID() {
     return this.ID;

@@ -81,7 +81,7 @@ public class GlobalState {
 
   public void saveState() {
     List<String> updatedState = new ArrayList<>();
-    updatedState.add(this.currUser == null ? "guest" : this.currUser.getUsername());
+    updatedState.add(this.currUser == null ? "guest" : this.currUser.getID());
     updatedState.add(String.valueOf(this.staySignedIn));
 
     Data.save(filepath, String.join(", ", updatedState));
