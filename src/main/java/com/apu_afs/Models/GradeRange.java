@@ -1,7 +1,6 @@
 package com.apu_afs.Models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,7 @@ public class GradeRange {
     List<String> gradesData = Data.fetch(GradeRange.filePath);
 
     for (String gradeRangesRow : gradesData) {
-      List<String> props = new ArrayList<>(Arrays.asList(gradeRangesRow.split(", ")));
+      List<String> props = List.of(gradeRangesRow.split(", "));
       if (props.get(columnLookup.get(column)).trim().equals(value)) {
         return new GradeRange(props);
       }
@@ -70,7 +69,7 @@ public class GradeRange {
     List<GradeRange> gradeRanges = new ArrayList<>();
 
     for (String gradeRangesRow : gradesData) {
-      gradeRanges.add(new GradeRange(Arrays.asList(gradeRangesRow.split(", "))));
+      gradeRanges.add(new GradeRange(List.of(gradeRangesRow.split(", "))));
     }
 
     return gradeRanges;
@@ -168,7 +167,7 @@ public class GradeRange {
     List<String> gradeRangesData = Data.fetch(filePath);
 
     List<String> updatedGradeRangesData = gradeRangesData.stream().filter((gradeRangeRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(gradeRangeRow.split(", ")));
+      List<String> props = List.of(gradeRangeRow.split(", "));
       return !props.get(columnLookup.get("id")).trim().equals(this.ID);
     }).collect(Collectors.toList());
 
@@ -188,7 +187,7 @@ public class GradeRange {
     List<String> gradeRangesData = Data.fetch(filePath);
 
     List<String> updatedGradeRangesData = gradeRangesData.stream().filter((gradeRangeRow) -> {
-      List<String> props = new ArrayList<String>(Arrays.asList(gradeRangeRow.split(", ")));
+      List<String> props = List.of(gradeRangeRow.split(", "));
       return !props.get(columnLookup.get("id")).trim().equals(this.ID);
     }).collect(Collectors.toList());
 

@@ -1,6 +1,6 @@
-3, joyce, 8873, Joyce, Whitman, female, 01-05-1993, joyce238@yahoo.com, 88372771, academic
 4, lola, 789, Lola, Martinez, female, 02-12-2003, lola123@mail.com, 345678912, student
 5, asd, asdASD#123, Derek, Zoolander, male, 16-07-1995, asd@asd.com, 31435464324, academic
 2, john, 123456%As, John, Doe, male, 28-11-1986, john123@mail.com, 12345678, lecturer
 6, emily, Poly123#, Emily, Smith, female, 19-10-2000, emily123@gmail.com, 66526179, lecturer
 1, jesse555, 456, Jesse, Pinkman, male, 21-09-1998, jesse555@mail.com, 234567891, admin
+3, joyce, Joy112#, Joyce, Whitman, female, 01-05-1993, joyce238@yahoo.com, 88372771, academic

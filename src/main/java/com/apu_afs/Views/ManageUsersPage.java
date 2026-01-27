@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +85,7 @@ public class ManageUsersPage extends JPanel {
             router.showView(Pages.LOGIN, state);
         });
         return;
-    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole().getValue())) {
+    } else if (!List.of(allowedRoles).contains(state.getCurrUser().getRole().getValue())) {
         SwingUtilities.invokeLater(() -> {
             router.showView(Pages.DASHBOARD, state);
         });
@@ -101,7 +100,7 @@ public class ManageUsersPage extends JPanel {
     searchInput = state.getUserSearch() != null ? state.getUserSearch() : "";
     roleConditions = state.getUserRoleConditions() != null ? 
         state.getUserRoleConditions() : 
-        Arrays.stream(Role.values()).map(Role::getValue).collect(Collectors.toSet());
+        List.of(Role.values()).stream().map(Role::getValue).collect(Collectors.toSet());
 
     searchField = new TextField("Search " + dataContext + "...");
     if (!searchInput.isEmpty()) {

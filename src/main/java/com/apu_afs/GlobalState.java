@@ -3,7 +3,6 @@ package com.apu_afs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.Arrays;
 
 import com.apu_afs.Models.Data;
 import com.apu_afs.Models.User;
@@ -27,7 +26,7 @@ public class GlobalState {
   public GlobalState() {
     List<String> stateData = Data.fetch(GlobalState.filepath);
 
-    List<String> stateDataProps = new ArrayList<String>(Arrays.asList(stateData.get(0).split(", ")));
+    List<String> stateDataProps = List.of(stateData.get(0).split(", "));
     if (stateDataProps.get(0).equals("guest")) {
       this.currUser = null;
       this.staySignedIn = false;

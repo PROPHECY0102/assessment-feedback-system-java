@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -192,7 +192,7 @@ public class UserPage extends JPanel {
             router.showView(Pages.LOGIN, state);
         });
         return;
-    } else if (!Arrays.asList(allowedRoles).contains(state.getCurrUser().getRole().getValue())) {
+    } else if (!List.of(allowedRoles).contains(state.getCurrUser().getRole().getValue())) {
         SwingUtilities.invokeLater(() -> {
             router.showView(Pages.DASHBOARD, state);
         });

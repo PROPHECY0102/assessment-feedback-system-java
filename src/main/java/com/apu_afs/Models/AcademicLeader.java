@@ -1,7 +1,6 @@
 package com.apu_afs.Models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -96,7 +95,7 @@ public class AcademicLeader extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = List.of(dataRow.split(", "));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
@@ -117,7 +116,7 @@ public class AcademicLeader extends User {
     
     // To the outdated role specific data and replace it with the updated information
     List<String> updatedData = data.stream().filter((dataRow) -> {
-      List<String> props = new ArrayList<>(Arrays.asList(dataRow.split(", ")));
+      List<String> props = List.of(dataRow.split(", "));
       return !props.get(columnLookup.get("userID")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 

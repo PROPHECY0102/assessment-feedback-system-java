@@ -15,7 +15,7 @@ public class Data {
         return new ArrayList<String>();
       }
 
-      List<String> rows = new ArrayList<String>(Arrays.asList(data.split("\n")));
+      List<String> rows = List.of(data.split("\n"));
       return rows;
     } catch (IOException e) {
       e.printStackTrace();

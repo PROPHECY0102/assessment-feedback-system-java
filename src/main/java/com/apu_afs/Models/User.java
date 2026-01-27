@@ -90,8 +90,8 @@ public abstract class User {
 
     List<String> roleUsersData = Data.fetch(filePaths.get(this.getRole()));
 
-    for (String roleUser : roleUsersData) {
-      List<String> props = new ArrayList<>(Arrays.asList(roleUser.split(", ")));
+    for (String roleUserRow : roleUsersData) {
+      List<String> props = List.of(roleUserRow.split(", "));
 
       if (props.get(columnLookup.get("id")).equals(this.getID())) {
         return props;
@@ -104,8 +104,8 @@ public abstract class User {
   public static User userAuth(String username, String password) {
     List<String> usersData = Data.fetch(User.filePath);
 
-    for (String user : usersData) {
-      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
+    for (String userRow : usersData) {
+      List<String> props = List.of(userRow.split(", "));
 
       if (props.get(columnLookup.get("username")).trim().equals(username) && props.get(columnLookup.get("password")).trim().equals(password)) {
         if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
@@ -126,8 +126,8 @@ public abstract class User {
   public static User getUserByMatchingValues(String column, String value) {
     List<String> usersData = Data.fetch(User.filePath);
 
-    for (String user : usersData) {
-      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
+    for (String userRow : usersData) {
+      List<String> props = List.of(userRow.split(", "));
       
       if (props.get(columnLookup.get(column)).trim().equals(value)) {
         if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
@@ -149,8 +149,8 @@ public abstract class User {
     List<String> usersData = Data.fetch(User.filePath);
     List<User> users = new ArrayList<>();
 
-    for (String user : usersData) {
-      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
+    for (String userRow : usersData) {
+      List<String> props = List.of(userRow.split(", "));
       
       if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
         users.add(new Admin(props));
@@ -183,8 +183,8 @@ public abstract class User {
     List<String> usersData = Data.fetch(User.filePath);
     List<User> users = new ArrayList<>();
 
-    for (String user : usersData) {
-      List<String> props = new ArrayList<>(Arrays.asList(user.split(", ")));
+    for (String userRow : usersData) {
+      List<String> props = List.of(userRow.split(", "));
       
       if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
         users.add(new Admin(props));
@@ -197,13 +197,22 @@ public abstract class User {
       }
     }
 
-    users = users.stream().filter(user -> {
+    List<User> filteredUsersByRole = users.stream().filter(user -> {
       return roleConditions.contains(user.getRole().getValue());
-    }).filter(user -> {
-      return user.getUsername().toLowerCase().contains(search.toLowerCase());
     }).collect(Collectors.toList());
+    
+    List<User> searchResults = filteredUsersByRole.stream()
+    .filter(user -> 
+      user.getUsername().toLowerCase().contains(search.toLowerCase()) ||
+      (user.getFirstName() + user.getLastName()).toLowerCase().contains(search.toLowerCase()) ||
+      (user instanceof Admin admin && admin.getDepartment().toLowerCase().contains(search.toLowerCase())) ||
+      (user instanceof AcademicLeader academicLeader && academicLeader.getFaculty().toLowerCase().contains(search.toLowerCase())) ||
+      (user instanceof Lecturer lecturer && lecturer.getAcademicLeader() != null && lecturer.getAcademicLeader().getFaculty().toLowerCase().contains(search.toLowerCase())) ||
+      (user instanceof Student student && student.getProgram().toLowerCase().contains(search.toLowerCase()))
+    )
+    .distinct().collect(Collectors.toList());
 
-    return users;
+    return new ArrayList<>(searchResults);
   }
 
   public static Validation validateUser(HashMap<String, String> inputValues) {
@@ -474,7 +483,7 @@ public abstract class User {
     
     // To remove the existing user old records out of the users list
     List<String> updatedUsersData = usersData.stream().filter((userRow) -> {
-      List<String> props = new ArrayList<>(Arrays.asList(userRow.split(", ")));
+      List<String> props = List.of(userRow.split(", "));
       return !props.get(columnLookup.get("id")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
@@ -499,10 +508,23 @@ public abstract class User {
     
     // To remove the existing user old records out of the users list
     List<String> updatedUsersData = usersData.stream().filter((userRow) -> {
-      List<String> props = new ArrayList<>(Arrays.asList(userRow.split(", ")));
+      List<String> props = List.of(userRow.split(", "));
       return !props.get(columnLookup.get("id")).trim().equals(this.ID);
     }).collect(Collectors.toCollection(ArrayList::new));
 
     Data.save(User.filePath, String.join("\n", updatedUsersData));
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) return true;
+    if (object == null || getClass() != object.getClass()) return false;
+    User that = (User) object;
+    return Objects.equals(this.ID, that.ID);
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.ID);
   }
 }
