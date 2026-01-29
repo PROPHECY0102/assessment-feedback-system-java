@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.apu_afs.Helper;
 
@@ -36,7 +37,7 @@ public class Module {
     this.ID = props.get(columnLookup.get("id")).trim();
     this.code = props.get(columnLookup.get("code")).trim();
     this.title = props.get(columnLookup.get("title")).trim();
-    this.description = props.get(columnLookup.get("description")).trim();
+    this.description = props.get(columnLookup.get("description")).trim().replace("|", "\n");
     this.creditHours = Double.parseDouble(props.get(columnLookup.get("creditHours")).trim());
     this.createdAt = LocalDate.parse(props.get(columnLookup.get("createdAt")).trim(), Helper.dateTimeFormatter);
     User potentialLeader = User.getUserByMatchingValues("id", props.get(columnLookup.get("leaderID")).trim());
@@ -110,11 +111,122 @@ public class Module {
       modules.add(new Module(props)); 
     }
 
-    // List<Module> searchResult = modules.stream().filter(module -> {
-      
-    // });
+    List<Module> searchResult = modules.stream()
+    .filter(module -> {
+      return module.getCode().toLowerCase().contains(search.toLowerCase()) ||
+      module.getTitle().toLowerCase().contains(search.toLowerCase()) ||
+      String.valueOf(module.getCreditHours()).contains(search.toLowerCase()) ||
+      (module.getLeader() != null && module.getLeader().getFaculty().contains(search.toLowerCase())) ||
+      (module.getLeader() != null && (module.getLeader().getFirstName() + module.getLeader().getLastName()).contains(search.toLowerCase())) ||
+      (module.getInstructor() != null && (module.getInstructor().getFirstName() + module.getInstructor().getLastName()).contains(search.toLowerCase()));
+    }).collect(Collectors.toList());
 
-    return modules;
+    return searchResult;
+  }
+
+  public String getID() {
+    return ID;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public double getCreditHours() {
+    return creditHours;
+  }
+
+  public LocalDate getCreatedAt() {
+    return createdAt;
+  }
+
+  public AcademicLeader getLeader() {
+    return leader;
+  }
+
+  public Lecturer getInstructor() {
+    return instructor;
+  }
+
+  public void setID(String ID) {
+    this.ID = ID;
+    update();
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+    update();
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+    update();
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+    update();
+  }
+
+  public void setCreditHours(double creditHours) {
+    this.creditHours = creditHours;
+    update();
+  }
+
+  public void setCreatedAt(LocalDate createdAt) {
+    this.createdAt = createdAt;
+    update();
+  }
+
+  public void setLeader(AcademicLeader leader) {
+    this.leader = leader;
+    update();
+  }
+
+  public void setInstructor(Lecturer instructor) {
+    this.instructor = instructor;
+    update();
+  }
+
+  public void update() {
+    List<String> moduleData = Data.fetch(Module.filePath);
+
+    List<String> updatedModuleData = moduleData.stream().filter(moduleRow -> {
+      List<String> props = List.of(moduleRow.split(", "));
+      return !props.get(columnLookup.get("id")).equals(this.ID);
+    }).collect(Collectors.toList());
+
+    List<String> updatedProps = new ArrayList<>();
+    updatedProps.add(this.ID);
+    updatedProps.add(this.code);
+    updatedProps.add(this.title);
+    updatedProps.add(this.description.replace("\n", "|"));
+    updatedProps.add(String.valueOf(this.creditHours));
+    updatedProps.add(this.createdAt.format(Helper.dateTimeFormatter));
+    updatedProps.add(this.leader != null ? this.leader.getID() : "0");
+    updatedProps.add(this.instructor != null ? this.instructor.getID() : "0");
+
+    updatedModuleData.add(String.join(", ", updatedProps));
+    Data.save(Module.filePath, String.join("\n", updatedModuleData));
+  }
+
+  public void delete() {
+    List<String> moduleData = Data.fetch(Module.filePath);
+
+    List<String> updatedModuleData = moduleData.stream().filter(moduleRow -> {
+      List<String> props = List.of(moduleRow.split(", "));
+      return !props.get(columnLookup.get("id")).equals(this.ID);
+    }).collect(Collectors.toList());
+
+    Data.save(Module.filePath, String.join("\n", updatedModuleData));
   }
 
   @Override

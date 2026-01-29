@@ -208,6 +208,7 @@ public abstract class User {
       (user instanceof Admin admin && admin.getDepartment().toLowerCase().contains(search.toLowerCase())) ||
       (user instanceof AcademicLeader academicLeader && academicLeader.getFaculty().toLowerCase().contains(search.toLowerCase())) ||
       (user instanceof Lecturer lecturer && lecturer.getAcademicLeader() != null && lecturer.getAcademicLeader().getFaculty().toLowerCase().contains(search.toLowerCase())) ||
+      (user instanceof Lecturer lecturer && lecturer.getAcademicLeader() != null && (lecturer.getAcademicLeader().getFirstName() + lecturer.getAcademicLeader().getLastName()).toLowerCase().contains(search.toLowerCase())) ||
       (user instanceof Student student && student.getProgram().toLowerCase().contains(search.toLowerCase()))
     )
     .distinct().collect(Collectors.toList());

@@ -16,10 +16,13 @@ public class GlobalState {
   // use for user form Pages.USER when editing selected users form Pages.MANAGEUSERS
   // no need to save this variable for persistent use
   private String selectedUserID;
+  private String selectedModuleID;
 
   // use for searching and filtering
   private String userSearch;
   private Set<String> userRoleConditions;
+
+  private String moduleSearch;
 
   private static final String filepath = "data/state.txt";
 
@@ -48,12 +51,20 @@ public class GlobalState {
     return this.selectedUserID;
   }
 
+  public String getSelectedModuleID() {
+    return this.selectedModuleID;
+  }
+
   public String getUserSearch() {
     return this.userSearch;
   }
 
   public Set<String> getUserRoleConditions() {
     return this.userRoleConditions;
+  }
+
+  public String getModuleSearch() {
+    return this.moduleSearch;
   }
 
   public void setCurrUser(User currUser) {
@@ -70,12 +81,20 @@ public class GlobalState {
     this.selectedUserID = selectedUserID;
   }
 
+  public void setSelectedModuleID(String selectedModuleID) {
+    this.selectedModuleID = selectedModuleID;
+  }
+
   public void setUserSearch(String userSearch) {
     this.userSearch = userSearch;
   }
 
   public void setUserRoleConditions(Set<String> userRoleConditions) {
     this.userRoleConditions = userRoleConditions;
+  }
+
+  public void setModuleSearch(String moduleSearch) {
+    this.moduleSearch = moduleSearch;
   }
 
   public void saveState() {
@@ -89,16 +108,16 @@ public class GlobalState {
   // When reaching new page after using state value remember to clear except login sessions
   public void clearState() {
     this.setSelectedUserID(null);
+    this.setSelectedModuleID(null);
     this.setUserSearch(null);
     this.setUserRoleConditions(null);
+    this.setModuleSearch(null);
   }
 
   // When user logout reset all state including login sessions
   public void hardResetState() {
     this.setCurrUser(null);
     this.setStaySignedIn(false);
-    this.setSelectedUserID(null);
-    this.setUserSearch(null);
-    this.setUserRoleConditions(null);
+    this.clearState();
   }
 }

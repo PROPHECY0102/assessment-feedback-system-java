@@ -29,7 +29,9 @@ public class Student extends User {
 
   public static final String filePath = "data/students.txt";
 
-  private static final List<NavOption> additionalNavOptions = List.of();
+  private static final List<NavOption> additionalNavOptions = List.of(
+    new NavOption(Pages.MANAGEMODULES)
+  );
   
   public Student(List<String> props) {
     super(props);

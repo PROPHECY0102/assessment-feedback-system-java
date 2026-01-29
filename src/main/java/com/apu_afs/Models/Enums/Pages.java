@@ -6,7 +6,9 @@ public enum Pages {
   MANAGEUSERS("Manage Users"),
   USER("User Form"),
   MANAGEGRADES("Manage Grades"),
-  PROFILE("Your Profile");
+  PROFILE("Your Profile"),
+  MANAGEMODULES("Manage Modules"),
+  MODULE("Module Form");
 
   private final String display;
 

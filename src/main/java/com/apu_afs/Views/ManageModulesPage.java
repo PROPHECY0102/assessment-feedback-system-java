@@ -1,0 +1,161 @@
+package com.apu_afs.Views;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+
+import com.apu_afs.GlobalState;
+import com.apu_afs.Helper;
+import com.apu_afs.Models.AcademicLeader;
+import com.apu_afs.Models.Module;
+import com.apu_afs.Models.Enums.Pages;
+import com.apu_afs.Models.Enums.Role;
+import com.apu_afs.TableModels.ModuleTableModel;
+import com.apu_afs.Views.components.HeaderPanel;
+import com.apu_afs.Views.components.NavPanel;
+import com.apu_afs.Views.components.TextField;
+
+import net.miginfocom.swing.MigLayout;
+
+public class ManageModulesPage extends JPanel {
+  HeaderPanel header;
+  NavPanel nav;
+
+  JPanel contentBody;
+
+  JPanel searchSection;
+  TextField searchField;
+  JButton searchClearBtn;
+  JButton searchBtn;
+
+  JPanel searchFilterGroup;
+
+  JPanel actionBtnsContainer;
+  JButton addBtn;
+  JButton editBtn;
+
+  JPanel searchFilterActionRow;
+
+  JPanel tableSection;
+  JLabel rowCountLabel;
+  JTable table;
+
+  List<Module> modules;
+  ModuleTableModel moduleTableModel;
+
+  String searchInput;
+ 
+  private static final String dataContext = "Modules";
+
+  public ManageModulesPage(Router router, GlobalState state) {
+    super(new MigLayout(
+    "fill, insets 0, gap 0",  
+      "[][][grow]",              
+      "[][grow]"   
+    ));
+
+    if (state.getCurrUser() == null) {
+      SwingUtilities.invokeLater(() -> {
+        router.showView(Pages.LOGIN, state);
+      });
+      return;
+    }
+
+    header = new HeaderPanel(router, state);
+    nav = new NavPanel(router, state);
+
+    contentBody = new JPanel(new MigLayout("insets 20 20, wrap 1, gapy 10"));
+    contentBody.setBackground(App.slate100);
+
+    searchInput = state.getModuleSearch() != null ? state.getModuleSearch() : "";
+
+    searchField = new TextField("Search " + dataContext + "...");
+    if (!searchInput.isEmpty()) {
+        searchField.setText(searchInput);
+    }
+    searchField.setBackground(App.slate200);
+    searchField.setBorder(BorderFactory.createCompoundBorder(searchField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    searchField.setPreferredSize(new Dimension(250, 35));
+
+    searchClearBtn = new JButton();
+    searchClearBtn.setText("Clear");
+    searchClearBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/cancel-icon.png"), 18, 18));
+    searchClearBtn.setForeground(Color.WHITE);
+    searchClearBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    searchClearBtn.setBackground(App.red600);
+    searchClearBtn.setFocusable(false);
+    searchClearBtn.setBorder(BorderFactory.createCompoundBorder(searchClearBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    searchClearBtn.addActionListener(e -> {
+      state.clearState();
+      router.showView(Pages.MANAGEMODULES, state);
+    });
+
+    searchBtn = new JButton();
+    searchBtn.setText("Search");
+    searchBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/search-icon.png"), 18, 18));
+    searchBtn.setForeground(Color.WHITE);
+    searchBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    searchBtn.setBackground(App.blue600);
+    searchBtn.setFocusable(false);
+    searchBtn.setBorder(BorderFactory.createCompoundBorder(searchBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    searchBtn.addActionListener(e -> {
+      state.setModuleSearch(searchField.getText());
+      router.showView(Pages.MANAGEMODULES, state);
+    });
+
+    searchSection = new JPanel(new MigLayout("insets 0, gapx 5, aligny center"));
+    searchSection.setBackground(App.slate100);
+    searchSection.add(searchField);
+    searchSection.add(searchClearBtn);
+    searchSection.add(searchBtn);
+
+    searchFilterGroup = new JPanel(new MigLayout("insets 0, wrap 1"));
+    searchFilterGroup.setBackground(App.slate100);
+    searchFilterGroup.add(searchSection);
+
+    addBtn = new JButton();
+    addBtn.setText("Add " + dataContext);
+    addBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/add-icon.png"), 18, 18));
+    addBtn.setForeground(Color.WHITE);
+    addBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    addBtn.setBackground(App.green600);
+    addBtn.setFocusable(false);
+    addBtn.setBorder(BorderFactory.createCompoundBorder(addBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    addBtn.addActionListener(e -> {
+      if (List.of(Role.ADMIN.getValue(), Role.ACADEMIC_LEADER.getValue()).contains(state.getCurrUser().getRole().getValue())) {
+        router.showView(Pages.MODULE, state);
+      } else {
+        JOptionPane.showMessageDialog(router, "Only Academic Leaders can create new modules!", "Error: Unable to create new module", JOptionPane.ERROR_MESSAGE);
+      }
+    });
+
+    editBtn = new JButton();
+    editBtn.setText("Edit Selected " + dataContext.substring(0, dataContext.length() - 1));
+    editBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/edit-icon.png"), 18, 18));
+    editBtn.setForeground(Color.WHITE);
+    editBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    editBtn.setBackground(App.orange600);
+    editBtn.setFocusable(false);
+    editBtn.setBorder(BorderFactory.createCompoundBorder(editBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    editBtn.addActionListener(e -> {
+      if (table.getSelectedRow() != -1) {
+        state.setSelectedModuleID(String.valueOf(table.getValueAt(table.getSelectedRow(), 0)));
+        router.showView(Pages.MODULE, state);
+      } else {
+        JOptionPane.showMessageDialog(router, "No module has been selected, cannot edit module!", "Error: Edit Selected Module", JOptionPane.ERROR_MESSAGE);
+      }
+    });
+  }
+}
