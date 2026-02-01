@@ -30,6 +30,7 @@ public class Main {
             UIManager.put( "Component.arc", 12 );
             UIManager.put( "ProgressBar.arc", 12 );
             UIManager.put( "TextComponent.arc", 12 );
+            UIManager.put( "TextArea.arc", 12 );
 
             // ComboBox button background
             UIManager.put("ComboBox.buttonBackground", App.slate200);

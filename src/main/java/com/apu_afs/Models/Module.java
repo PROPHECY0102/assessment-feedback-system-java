@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.apu_afs.Helper;
+import com.apu_afs.Models.Enums.Role;
 
 public class Module {
   String ID;
@@ -102,13 +103,21 @@ public class Module {
     return modules;
   }
 
-  public static List<Module> fetchModules(String search) {
+  public static List<Module> fetchModules(String search, User currUser) {
     List<String> modulesData = Data.fetch(Module.filePath);
     List<Module> modules = new ArrayList<>();
+
+    boolean filterOnlyCurrLecturer = currUser.getRole() == Role.LECTURER;
     
     for (String modulesRow : modulesData) {
       List<String> props = List.of(modulesRow.split(", "));
-      modules.add(new Module(props)); 
+      if (filterOnlyCurrLecturer) {
+        if (props.get(columnLookup.get("instructorID")).equals(currUser.getID())) {
+          modules.add(new Module(props));
+        }
+      } else {
+        modules.add(new Module(props));
+      }
     }
 
     List<Module> searchResult = modules.stream()
@@ -122,6 +131,35 @@ public class Module {
     }).collect(Collectors.toList());
 
     return searchResult;
+  }
+
+  public static Validation validate(HashMap<String, String> inputValues) {
+    Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"code", "title", "description", "creditHours"}, inputValues);
+    if (!cannotBeEmptyCheck.getSuccess()) {
+      return cannotBeEmptyCheck;
+    }
+
+    Validation minLengthCheck = Validation.minLengthCheck(new String[] {"code", "title"}, inputValues, 3);
+    if (!minLengthCheck.getSuccess()) {
+      return minLengthCheck;
+    }
+
+    Validation maxLengthCheck = Validation.maxLengthCheck(new String[] {"code", "title"}, inputValues, 50);
+    if (!maxLengthCheck.getSuccess()) {
+      return maxLengthCheck;
+    }
+
+    Validation validDoubleCheck = Validation.validDoubleCheck(new String[] {"creditHours"}, inputValues);
+    if (!validDoubleCheck.getSuccess()) {
+      return validDoubleCheck;
+    }
+
+    Validation validDateCheck = Validation.validDateCheck(new String[] {"createdAt"}, inputValues);
+    if (!validDateCheck.getSuccess()) {
+      return validDateCheck;
+    }
+
+    return new Validation("Success! No Invalid Input", true);
   }
 
   public String getID() {

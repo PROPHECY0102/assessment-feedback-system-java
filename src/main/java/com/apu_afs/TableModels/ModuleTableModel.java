@@ -50,8 +50,8 @@ public class ModuleTableModel extends AbstractTableModel {
         case 3: return module.getLeader() != null ? module.getLeader().getFaculty() : "Not Available (N/A)";
         case 4: return String.valueOf(module.getCreditHours());
         case 5: return module.getCreatedAt().format(Helper.dateTimeFormatter);
-        case 6: return module.getLeader() != null ? (module.getLeader().getFirstName() + module.getLeader().getLastName()) : "Not Available (N/A)";
-        case 7: return module.getInstructor() != null ? (module.getInstructor().getFirstName() + module.getInstructor().getLastName()) : "Not Available (N/A)";
+        case 6: return module.getLeader() != null ? (module.getLeader().getFirstName() + " " +  module.getLeader().getLastName()) : "Not Available (N/A)";
+        case 7: return module.getInstructor() != null ? (module.getInstructor().getFirstName() + " " + module.getInstructor().getLastName()) : "Not Available (N/A)";
         default: return null;
       }
     }

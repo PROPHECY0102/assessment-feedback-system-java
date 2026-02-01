@@ -257,11 +257,9 @@ public class ManageGradesPage extends JPanel {
         JOptionPane.showMessageDialog(router, messageDialogContent, messageDialogTitle, JOptionPane.INFORMATION_MESSAGE);
         router.showView(Pages.MANAGEGRADES, state);
       } else {
-        if (!inputValidation.getSuccess()) {
-          this.displayError(inputValidation);
-          String messageDialogTitle = editingGradeID != null ? "Cannot edit Grade: " + editingGradeID : "Cannot create new Grade"; 
-          JOptionPane.showMessageDialog(router, inputValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
-        }
+        this.displayError(inputValidation);
+        String messageDialogTitle = editingGradeID != null ? "Cannot edit Grade: " + editingGradeID : "Cannot create new Grade"; 
+        JOptionPane.showMessageDialog(router, inputValidation.getMessage(), "Error: Invalid Form input! " + messageDialogTitle, JOptionPane.ERROR_MESSAGE);
       }
     });
 

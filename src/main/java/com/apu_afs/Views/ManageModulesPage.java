@@ -1,6 +1,7 @@
 package com.apu_afs.Views;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
@@ -13,8 +14,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
@@ -137,7 +141,7 @@ public class ManageModulesPage extends JPanel {
       if (List.of(Role.ADMIN.getValue(), Role.ACADEMIC_LEADER.getValue()).contains(state.getCurrUser().getRole().getValue())) {
         router.showView(Pages.MODULE, state);
       } else {
-        JOptionPane.showMessageDialog(router, "Only Academic Leaders can create new modules!", "Error: Unable to create new module", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(router, "Only Admin/Academic Leaders can create new modules!", "Error: Unable to create new module", JOptionPane.ERROR_MESSAGE);
       }
     });
 
@@ -157,5 +161,92 @@ public class ManageModulesPage extends JPanel {
         JOptionPane.showMessageDialog(router, "No module has been selected, cannot edit module!", "Error: Edit Selected Module", JOptionPane.ERROR_MESSAGE);
       }
     });
+
+    actionBtnsContainer = new JPanel(new MigLayout("insets 0, gapx 5"));
+    actionBtnsContainer.setBackground(App.slate100);
+    actionBtnsContainer.add(addBtn);
+    actionBtnsContainer.add(editBtn);
+
+    searchFilterActionRow = new JPanel(new MigLayout("insets 5 10"));
+    searchFilterActionRow.setBackground(App.slate100);
+    searchFilterActionRow.add(searchFilterGroup);
+    searchFilterActionRow.add(actionBtnsContainer, "push, align right");
+
+    modules = Module.fetchModules(searchInput, state.getCurrUser());
+    moduleTableModel = new ModuleTableModel(modules);
+
+    rowCountLabel = new JLabel();
+    rowCountLabel.setText("Total " + dataContext + " queried: " + String.valueOf(moduleTableModel.getRowCount()));
+    rowCountLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+
+    table = new JTable(moduleTableModel);
+    table.setPreferredScrollableViewportSize(new Dimension(table.getWidth(), 800));
+    // Wrap the table in a JScrollPane to show column headers
+    JScrollPane scrollPane = new JScrollPane(table);
+    scrollPane.setBackground(App.slate100);
+
+    // Configure table appearance
+    table.setFillsViewportHeight(true);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    table.setRowHeight(40); // Add padding to rows
+
+    // Style the table header
+    JTableHeader tableHeader = table.getTableHeader();
+    tableHeader.setBackground(new Color(51, 65, 85));
+    tableHeader.setForeground(Color.WHITE);
+    tableHeader.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+    tableHeader.setPreferredSize(new Dimension(tableHeader.getPreferredSize().width, 45));
+
+    // Style the table cells
+    table.setBackground(Color.WHITE);
+    table.setForeground(Color.BLACK);
+    table.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+    table.setGridColor(new Color(226, 232, 240));
+    table.setShowGrid(true);
+    table.setIntercellSpacing(new Dimension(1, 1));
+
+    // Add cell padding with a custom renderer
+    DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
+      @Override
+      public Component getTableCellRendererComponent(JTable table, Object value,
+              boolean isSelected, boolean hasFocus, int row, int column) {
+          Component c = super.getTableCellRendererComponent(table, value, 
+              isSelected, hasFocus, row, column);
+          
+          if (c instanceof JLabel) {
+              JLabel label = (JLabel) c;
+              label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+          }
+          
+          // Alternate row colors
+          if (!isSelected) {
+              if (row % 2 == 0) {
+                  c.setBackground(Color.WHITE);
+              } else {
+                  c.setBackground(new Color(248, 250, 252));
+              }
+          }
+          
+          return c;
+        }
+    };
+
+    // Apply the renderer to all columns
+    for (int i = 0; i < table.getColumnCount(); i++) {
+        table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+    }
+
+    tableSection = new JPanel(new MigLayout("insets 5 10, wrap 1, gapy 5"));
+    tableSection.setBackground(App.slate100);
+    tableSection.add(rowCountLabel);
+    tableSection.add(scrollPane, "grow, width 100%");
+    contentBody.add(searchFilterActionRow, "growx, width 100%");
+    contentBody.add(tableSection, "grow, width 100%");
+    
+    this.add(header, "span, growx, wrap");
+    this.add(nav, "growy");
+    this.add(contentBody, "span, grow");
+
+    state.clearState();
   }
 }

@@ -1,2 +1,2 @@
-1, SWE-2101, Software Engineering, No Description, 3.0, 12-08-2018, 5, 0
+1, SWE-2101, Software Engineering, No Description, 3.0, 12-08-2018, 5, 6
 2, NET-2132, Data Communication and Networking, No Description, 4.0, 26-09-2016, 3, 2
