@@ -41,4 +41,13 @@ public class Helper {
     }
     return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
+
+  // use for multiline descriptions like bio
+  public static String saveEncode(String input) {
+    return input.replace("\n", "|").replace(", ", "~");
+  }
+
+  public static String saveDecode(String input) {
+    return input.replace("|", "\n").replace("~", ", ");
+  }
 }

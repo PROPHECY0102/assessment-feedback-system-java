@@ -1,2 +1,2 @@
-1, SWE-2101, Software Engineering, No Description, 3.0, 12-08-2018, 5, 6
-2, NET-2132, Data Communication and Networking, No Description, 4.0, 26-09-2016, 3, 2
+1, SWE-2101, Software Engineering, Software engineering is the systematic disciplined application of engineering principles to |the design~development~testing~maintenance and management of software systems, 3.0, 12-08-2018, 5, 6
+2, NET-2132, Data Communication and Networking, Data communication and networking involves the transmission of digital data between computers and devices |via wired or wireless media~enabling information exchange., 4.0, 26-09-2016, 3, 2

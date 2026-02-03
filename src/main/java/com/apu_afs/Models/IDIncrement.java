@@ -7,6 +7,7 @@ public class IDIncrement {
   private Integer userID;
   private Integer gradeRangeID;
   private Integer moduleID;
+  private Integer studentModuleID;
 
   private static final String filePath = "data/idIncrements.txt";
 
@@ -16,6 +17,7 @@ public class IDIncrement {
     this.userID = Integer.parseInt(incrementIds.get(0).trim());
     this.gradeRangeID = Integer.parseInt(incrementIds.get(1).trim());
     this.moduleID = Integer.parseInt(incrementIds.get(2).trim());
+    this.studentModuleID = Integer.parseInt(incrementIds.get(3).trim());
   }
 
   public Integer getUserID() {
@@ -36,11 +38,18 @@ public class IDIncrement {
     return this.moduleID;
   }
 
+  public Integer getStudentModuleID() {
+    this.studentModuleID++;
+    saveIDIncrement();
+    return this.studentModuleID;
+  }
+
   private void saveIDIncrement() {
     List<String> rows = new ArrayList<>();
     rows.add(String.valueOf(this.userID));
     rows.add(String.valueOf(this.gradeRangeID));
     rows.add(String.valueOf(this.moduleID));
+    rows.add(String.valueOf(this.studentModuleID));
 
     Data.save(filePath, String.join("\n", rows));
   }

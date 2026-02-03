@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GradeRange {
-  String ID;
-  String grade; // A, B+, C- (need to be unique and max two characters)
-  String description; // Distinction, Credit
-  double points; // 4.0, 3.7, 3.3
-  double min; // 50 (50-79)
-  double max; // 79 (50-79)
+  private String ID;
+  private String grade; // A, B+, C- (need to be unique and max two characters)
+  private String description; // Distinction, Credit
+  private double points; // 4.0, 3.7, 3.3
+  private double min; // 50 (50-79)
+  private double max; // 79 (50-79)
 
   public static Map<String, Integer> columnLookup = Map.ofEntries(
     Map.entry("id", 0),

@@ -369,6 +369,7 @@ public class ModulePage extends JPanel {
       }
 
       HashMap<String, String> inputValues = new HashMap<>();
+      inputValues.put("id", actionContext.equals("edit") ? editingModule.getID() : null);
       for (String key : textFields.keySet()) {
         inputValues.put(key, textFields.get(key).getText().trim());
       }

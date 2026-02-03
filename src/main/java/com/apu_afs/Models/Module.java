@@ -12,14 +12,14 @@ import com.apu_afs.Helper;
 import com.apu_afs.Models.Enums.Role;
 
 public class Module {
-  String ID;
-  String code;
-  String title;
-  String description;
-  double creditHours;
-  LocalDate createdAt;
-  AcademicLeader leader;
-  Lecturer instructor;
+  private String ID;
+  private String code;
+  private String title;
+  private String description;
+  private double creditHours;
+  private LocalDate createdAt;
+  private AcademicLeader leader;
+  private Lecturer instructor;
 
   public static Map<String, Integer> columnLookup = Map.ofEntries(
     Map.entry("id", 0),
@@ -38,7 +38,7 @@ public class Module {
     this.ID = props.get(columnLookup.get("id")).trim();
     this.code = props.get(columnLookup.get("code")).trim();
     this.title = props.get(columnLookup.get("title")).trim();
-    this.description = props.get(columnLookup.get("description")).trim().replace("|", "\n");
+    this.description = Helper.saveDecode(props.get(columnLookup.get("description")).trim());
     this.creditHours = Double.parseDouble(props.get(columnLookup.get("creditHours")).trim());
     this.createdAt = LocalDate.parse(props.get(columnLookup.get("createdAt")).trim(), Helper.dateTimeFormatter);
     User potentialLeader = User.getUserByMatchingValues("id", props.get(columnLookup.get("leaderID")).trim());
@@ -81,7 +81,7 @@ public class Module {
     
     for (String modulesRow : modulesData) {
       List<String> props = List.of(modulesRow.split(", "));
-      if (props.get(columnLookup.get(column)).equals(value)) {
+      if (props.get(columnLookup.get(column)).trim().equals(value)) {
         return new Module(props);
       }
     }
@@ -95,7 +95,7 @@ public class Module {
     
     for (String modulesRow : modulesData) {
       List<String> props = List.of(modulesRow.split(", "));
-      if (props.get(columnLookup.get(column)).equals(value)) {
+      if (props.get(columnLookup.get(column)).trim().equals(value)) {
         modules.add(new Module(props));
       }
     }
@@ -112,7 +112,7 @@ public class Module {
     for (String modulesRow : modulesData) {
       List<String> props = List.of(modulesRow.split(", "));
       if (filterOnlyCurrLecturer) {
-        if (props.get(columnLookup.get("instructorID")).equals(currUser.getID())) {
+        if (props.get(columnLookup.get("instructorID")).trim().equals(currUser.getID())) {
           modules.add(new Module(props));
         }
       } else {
@@ -246,7 +246,7 @@ public class Module {
     updatedProps.add(this.ID);
     updatedProps.add(this.code);
     updatedProps.add(this.title);
-    updatedProps.add(this.description.replace("\n", "|"));
+    updatedProps.add(Helper.saveEncode(this.description));
     updatedProps.add(String.valueOf(this.creditHours));
     updatedProps.add(this.createdAt.format(Helper.dateTimeFormatter));
     updatedProps.add(this.leader != null ? this.leader.getID() : "0");
