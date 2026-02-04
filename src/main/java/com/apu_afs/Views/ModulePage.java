@@ -8,15 +8,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
@@ -27,10 +31,14 @@ import com.apu_afs.Models.Admin;
 import com.apu_afs.Models.ComboBoxItem;
 import com.apu_afs.Models.Lecturer;
 import com.apu_afs.Models.Module;
+import com.apu_afs.Models.Student;
+import com.apu_afs.Models.StudentModule;
 import com.apu_afs.Models.User;
 import com.apu_afs.Models.Validation;
+import com.apu_afs.Models.Enums.ModuleStatus;
 import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Models.Enums.Role;
+import com.apu_afs.TableModels.StudentModuleTableModel;
 import com.apu_afs.Views.components.FixedTextArea;
 import com.apu_afs.Views.components.HeaderPanel;
 import com.apu_afs.Views.components.NavPanel;
@@ -95,6 +103,34 @@ public class ModulePage extends JPanel {
   JButton submitBtn;
   JButton deleteBtn;
 
+  JPanel searchSection;
+  TextField searchField;
+  JButton searchClearBtn;
+  JButton searchBtn;
+
+  JPanel filterOptionsContainer;
+  JCheckBox filterUnregisteredCheckButton;
+  JCheckBox filterRegisteredCheckButton;
+  JCheckBox filterActiveCheckButton;
+  JCheckBox filterCompletedCheckButton;
+  JCheckBox filterSuspendedCheckButton;
+  JCheckBox filterDroppedCheckButton;
+
+  JPanel searchFilterGroup;
+
+  List<ComboBoxItem> moduleStatusOptions;
+
+  JPanel studentTabActionGroup;
+  JLabel selectedStudentDisplay;
+  JPanel moduleStatusRow;
+  JComboBox<ComboBoxItem> moduleStatusComboBox;
+  JButton updateBtn;
+
+  JPanel searchFilterActionRow;
+
+  JLabel studentCount;
+  JTable studentModuleTable;
+
   String actionContext;
   Module editingModule;
 
@@ -103,6 +139,10 @@ public class ModulePage extends JPanel {
   Map<String, JDateChooser> dateChoosers;
   Map<String, JComboBox<ComboBoxItem>> comboBoxes;
   Map<String, JLabel> errorLabels;
+
+  List<Student> students;
+  List<StudentModule> studentModules;
+  StudentModuleTableModel smTableModel;
   
   public ModulePage(Router router, GlobalState state) {
      super(new MigLayout(
@@ -442,6 +482,69 @@ public class ModulePage extends JPanel {
     if (List.of(Role.ADMIN.getValue(), Role.ACADEMIC_LEADER.getValue()).contains(state.getCurrUser().getRole().getValue())) {
       actionButtonGroup.add(submitBtn, "push, alignx right");
     }
+
+    String searchInput = state.getModuleSearch();
+    Set<String> studentModuleStatusConditions = state.getStudentModuleStatusConditions() != null ?
+      state.getStudentModuleStatusConditions() : 
+      Set.of(ModuleStatus.REGISTERED.getValue(), ModuleStatus.ACTIVE.getValue());
+
+    searchField = new TextField("Search Students...");
+    if (!searchInput.isEmpty()) {
+      searchField.setText(searchInput);
+    }
+    searchField.setBackground(App.slate200);
+    searchField.setBorder(BorderFactory.createCompoundBorder(searchField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+    searchField.setPreferredSize(new Dimension(250, 35));
+
+    searchClearBtn = new JButton();
+    searchClearBtn.setText("Clear");
+    searchClearBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/cancel-icon.png"), 18, 18));
+    searchClearBtn.setForeground(Color.WHITE);
+    searchClearBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    searchClearBtn.setBackground(App.red600);
+    searchClearBtn.setFocusable(false);
+    searchClearBtn.setBorder(BorderFactory.createCompoundBorder(searchClearBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+    searchClearBtn.addActionListener(e -> {
+      state.clearState();
+      router.showView(Pages.MANAGEUSERS, state);
+    });
+
+    searchBtn = new JButton();
+    searchBtn.setText("Search");
+    searchBtn.setIcon(Helper.iconResizer(new ImageIcon("assets/search-icon.png"), 18, 18));
+    searchBtn.setForeground(Color.WHITE);
+    searchBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+    searchBtn.setBackground(App.blue600);
+    searchBtn.setFocusable(false);
+    searchBtn.setBorder(BorderFactory.createCompoundBorder(searchBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
+
+    searchSection = new JPanel(new MigLayout("insets 0, gapx 5, aligny center"));
+    searchSection.setBackground(App.slate100);
+    searchSection.add(searchField);
+    searchSection.add(searchClearBtn);
+    searchSection.add(searchBtn);
+
+    filterUnregisteredCheckButton = new JCheckBox();
+    filterUnregisteredCheckButton.setText("Unregistered");
+    filterUnregisteredCheckButton.setSelected(studentModuleStatusConditions.contains("unregistered"));
+
+    filterRegisteredCheckButton = new JCheckBox();
+    filterRegisteredCheckButton.setText(ModuleStatus.REGISTERED.getDisplay());
+    filterRegisteredCheckButton.setSelected(studentModuleStatusConditions.contains(ModuleStatus.REGISTERED.getValue()));
+
+    filterActiveCheckButton = new JCheckBox();
+    filterActiveCheckButton.setText(ModuleStatus.ACTIVE.getDisplay());
+    filterActiveCheckButton.setSelected(studentModuleStatusConditions.contains(ModuleStatus.ACTIVE.getValue()));
+
+    filterCompletedCheckButton = new JCheckBox();
+    filterCompletedCheckButton.setText(ModuleStatus.COMPLETED.getDisplay());
+    filterCompletedCheckButton.setSelected(studentModuleStatusConditions.contains(ModuleStatus.COMPLETED.getValue()));
+
+    studentTab = new JPanel(new MigLayout("insets 30 0, wrap 1, gapy 10"));
+    studentTab.setBackground(App.slate100);
+    studentTab.add(searchFilterActionRow);
+    studentTab.add(studentCount);
+    studentTab.add(studentModuleTable);
 
     contentBody.add(formTitle);
     contentBody.add(formTabbedPane, "width 100%");

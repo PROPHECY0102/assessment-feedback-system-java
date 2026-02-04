@@ -24,6 +24,10 @@ public class GlobalState {
 
   private String moduleSearch;
 
+  private String studentSearch;
+  private Set<String> studentModuleStatusConditions;
+  private String modulePageCurrTab;
+
   private static final String filepath = "data/state.txt";
 
   public GlobalState() {
@@ -67,6 +71,18 @@ public class GlobalState {
     return this.moduleSearch;
   }
 
+  public String getStudentSearch() {
+    return this.studentSearch;
+  }
+
+  public Set<String> getStudentModuleStatusConditions() {
+    return this.studentModuleStatusConditions;
+  }
+
+  public String getModulePageCurrTab() {
+    return this.modulePageCurrTab;
+  }
+
   public void setCurrUser(User currUser) {
     this.currUser = currUser;
     saveState();
@@ -97,6 +113,17 @@ public class GlobalState {
     this.moduleSearch = moduleSearch;
   }
 
+  public void setStudentSearch(String studentSearch) {
+    this.studentSearch = studentSearch;
+  }
+
+  public void setStudentModuleStatusConditions(Set<String> studentModuleStatusConditions) {
+    this.studentModuleStatusConditions = studentModuleStatusConditions;
+  }
+  public void setModulePageCurrTab(String modulePageCurrTab) {
+    this.modulePageCurrTab = modulePageCurrTab;
+  }
+
   public void saveState() {
     List<String> updatedState = new ArrayList<>();
     updatedState.add(this.currUser == null ? "guest" : this.currUser.getID());
@@ -112,6 +139,9 @@ public class GlobalState {
     this.setUserSearch(null);
     this.setUserRoleConditions(null);
     this.setModuleSearch(null);
+    this.setStudentSearch(null);
+    this.setStudentModuleStatusConditions(null);
+    this.setModulePageCurrTab(null);
   }
 
   // When user logout reset all state including login sessions
