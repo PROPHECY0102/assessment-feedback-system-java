@@ -13,7 +13,7 @@ public class StudentModuleTableModel extends AbstractTableModel {
   private List<StudentModule> studentModules;
   
   private final String[] columnNames = {
-    "Student ID", "Name", "Program", "CGPA", 
+    "No", "Name", "Program", "Email", 
     "Enrollment Status", "Enrolled Date", "Points"
   };
 
@@ -52,10 +52,10 @@ public class StudentModuleTableModel extends AbstractTableModel {
     StudentModule enrollment = findStudentModuleEnrollment(student.getID());
     
     switch (columnIndex) {
-      case 0: return student.getID();
+      case 0: return String.valueOf(rowIndex);
       case 1: return student.getFirstName() + " " + student.getLastName();
       case 2: return student.getProgram();
-      case 3: return String.format("%.2f", student.getCgpa());
+      case 3: return student.getEmail();
       case 4: return enrollment != null ? enrollment.getStatus().getDisplay() : "Not Enrolled";
       case 5: return enrollment != null ? 
           enrollment.getEnrolledAt().format(Helper.dateTimeFormatter) : "-";

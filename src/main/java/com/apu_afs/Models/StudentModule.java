@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.apu_afs.Helper;
@@ -28,7 +29,7 @@ public class StudentModule {
     Map.entry("points", 5)
   );
 
-  private static String filePath = "data/studentModule.txt";
+  private static String filePath = "data/studentModules.txt";
 
   public StudentModule(List<String> props) {
     this.ID = props.get(columnLookup.get("id")).trim();
@@ -36,7 +37,7 @@ public class StudentModule {
     this.student = potentialUser instanceof Student studentUser ? studentUser : null;
     this.module = Module.getModuleByMatchingValues("id", props.get(columnLookup.get("module")).trim());
     this.status = ModuleStatus.fromValue(props.get(columnLookup.get("status")).trim());
-    this.enrolledAt = LocalDate.parse(props.get(columnLookup.get("enrolledAt")).trim());
+    this.enrolledAt = LocalDate.parse(props.get(columnLookup.get("enrolledAt")).trim(), Helper.dateTimeFormatter);
     this.points = Double.parseDouble(props.get(columnLookup.get("points")).trim());
   }
 
@@ -54,7 +55,7 @@ public class StudentModule {
     this.student = potentialUser instanceof Student studentUser ? studentUser : null;
     this.module = Module.getModuleByMatchingValues("id", inputValues.get("module"));
     this.status = ModuleStatus.fromValue(inputValues.get("status"));
-    this.enrolledAt = LocalDate.parse(inputValues.get("enrolledAt"));
+    this.enrolledAt = LocalDate.parse(inputValues.get("enrolledAt"), Helper.dateTimeFormatter);
     this.points = Double.parseDouble(inputValues.get("points"));
   }
 
@@ -85,22 +86,22 @@ public class StudentModule {
     return studentModules;
   }
 
-  public static List<StudentModule> fetchStudentModules(String search, String studentID, String moduleID, ModuleStatus status) {
+  public static List<StudentModule> fetchStudentModules(String search, String studentID, String moduleID, Set<String> statuses) {
     List<String> studentModulesData = Data.fetch(StudentModule.filePath);
     List<StudentModule> studentModules = new ArrayList<>();
     
     for (String modulesRow : studentModulesData) {
       List<String> props = List.of(modulesRow.split(", "));
 
-      if (studentID != null && !props.get(columnLookup.get("student")).trim().equals(studentID)) {
+      if (!studentID.isEmpty() && !props.get(columnLookup.get("student")).trim().equals(studentID)) {
         continue;
       }
       
-      if (moduleID != null && !props.get(columnLookup.get("module")).trim().equals(moduleID)) {
+      if (!moduleID.isEmpty() && !props.get(columnLookup.get("module")).trim().equals(moduleID)) {
         continue;
       }
       
-      if (status != null && !ModuleStatus.fromValue(props.get(columnLookup.get("status")).trim()).getValue().equals(status.getValue())) {
+      if (statuses.isEmpty() || !statuses.contains(props.get(columnLookup.get("status")).trim())) {
         continue;
       }
 

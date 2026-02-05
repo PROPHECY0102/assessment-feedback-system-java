@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -22,7 +20,6 @@ import javax.swing.table.JTableHeader;
 
 import com.apu_afs.GlobalState;
 import com.apu_afs.Helper;
-import com.apu_afs.Models.AcademicLeader;
 import com.apu_afs.Models.Module;
 import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Models.Enums.Role;
