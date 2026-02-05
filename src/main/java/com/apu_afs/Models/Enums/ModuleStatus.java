@@ -1,11 +1,10 @@
 package com.apu_afs.Models.Enums;
 
 public enum ModuleStatus {
-  REGISTERED("registered", "Registered"),
   ACTIVE("active", "Active"),
   COMPLETED("completed", "Completed"),
   SUSPENDED("suspended", "Suspended"),
-  DROPPED("dropped", "Dropeed");
+  DROPPED("dropped", "Dropped");
 
   private final String value;
   private final String display;

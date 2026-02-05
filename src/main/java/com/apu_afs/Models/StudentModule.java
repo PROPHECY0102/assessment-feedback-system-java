@@ -12,10 +12,11 @@ import java.util.stream.Collectors;
 import com.apu_afs.Helper;
 import com.apu_afs.Models.Enums.ModuleStatus;
 
+// StudentModule simulates a pivot table to represent a many to many relationship such as student can enrolled into many modules but a module can be enrolled into by many students
 public class StudentModule {
   private String ID;
-  private Student student;
-  private Module module;
+  private Student student; // composite key
+  private Module module; // composite key
   private ModuleStatus status;
   private LocalDate enrolledAt;
   private double points;
@@ -64,7 +65,7 @@ public class StudentModule {
     
     for (String modulesRow : studentModulesData) {
       List<String> props = List.of(modulesRow.split(", "));
-      if (props.get(columnLookup.get(column)).equals(value)) {
+      if (props.get(columnLookup.get(column)).trim().equals(value)) {
         return new StudentModule(props);
       }
     }
@@ -84,6 +85,21 @@ public class StudentModule {
     }
 
     return studentModules;
+  }
+
+  public static StudentModule getStudentModuleByCompositeKey(String studentID, String moduleID) {
+    List<String> studentModulesData = Data.fetch(StudentModule.filePath);
+    
+    for (String modulesRow : studentModulesData) {
+      List<String> props = List.of(modulesRow.split(", "));
+      String currSMStudentID = props.get(columnLookup.get("student")).trim();
+      String currSMModuleID = props.get(columnLookup.get("module")).trim();
+      if (currSMStudentID.equals(studentID) && currSMModuleID.equals(moduleID)) {
+        return new StudentModule(props);
+      }
+    }
+
+    return null;
   }
 
   public static List<StudentModule> fetchStudentModules(String search, String studentID, String moduleID, Set<String> statuses) {

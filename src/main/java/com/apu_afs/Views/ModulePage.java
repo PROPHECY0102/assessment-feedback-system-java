@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +28,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
@@ -119,7 +122,6 @@ public class ModulePage extends JPanel {
 
   JPanel filterOptionsContainer;
   JCheckBox filterUnregisteredCheckButton;
-  JCheckBox filterRegisteredCheckButton;
   JCheckBox filterActiveCheckButton;
   JCheckBox filterCompletedCheckButton;
   JCheckBox filterSuspendedCheckButton;
@@ -493,7 +495,7 @@ public class ModulePage extends JPanel {
     searchInput = state.getStudentSearch() != null ? state.getStudentSearch() : "";
     studentModuleStatusConditions = state.getStudentModuleStatusConditions() != null ?
       state.getStudentModuleStatusConditions() : 
-      new HashSet<>(Arrays.asList(ModuleStatus.REGISTERED.getValue(), ModuleStatus.ACTIVE.getValue()));
+      new HashSet<>(Arrays.asList(ModuleStatus.ACTIVE.getValue()));
 
     searchField = new TextField("Search Students...");
     if (!searchInput.isEmpty()) {
@@ -537,10 +539,6 @@ public class ModulePage extends JPanel {
     filterUnregisteredCheckButton.setText("Unregistered");
     filterUnregisteredCheckButton.setSelected(studentModuleStatusConditions.contains("unregistered"));
 
-    filterRegisteredCheckButton = new JCheckBox();
-    filterRegisteredCheckButton.setText(ModuleStatus.REGISTERED.getDisplay());
-    filterRegisteredCheckButton.setSelected(studentModuleStatusConditions.contains(ModuleStatus.REGISTERED.getValue()));
-
     filterActiveCheckButton = new JCheckBox();
     filterActiveCheckButton.setText(ModuleStatus.ACTIVE.getDisplay());
     filterActiveCheckButton.setSelected(studentModuleStatusConditions.contains(ModuleStatus.ACTIVE.getValue()));
@@ -559,7 +557,6 @@ public class ModulePage extends JPanel {
 
     Map<String, JCheckBox> filterCheckBoxes = Map.ofEntries(
       Map.entry("unregistered", filterUnregisteredCheckButton),
-      Map.entry(ModuleStatus.REGISTERED.getValue(), filterRegisteredCheckButton),
       Map.entry(ModuleStatus.ACTIVE.getValue(), filterActiveCheckButton),
       Map.entry(ModuleStatus.COMPLETED.getValue(), filterCompletedCheckButton),
       Map.entry(ModuleStatus.SUSPENDED.getValue(), filterSuspendedCheckButton),
@@ -604,7 +601,6 @@ public class ModulePage extends JPanel {
     filterOptionsContainer = new JPanel(new MigLayout("insets 0, gapx 5"));
     filterOptionsContainer.setBackground(App.slate100);
     filterOptionsContainer.add(filterUnregisteredCheckButton);
-    filterOptionsContainer.add(filterRegisteredCheckButton);
     filterOptionsContainer.add(filterActiveCheckButton);
     filterOptionsContainer.add(filterCompletedCheckButton);
     filterOptionsContainer.add(filterSuspendedCheckButton);
@@ -616,7 +612,6 @@ public class ModulePage extends JPanel {
     searchFilterGroup.add(filterOptionsContainer);
 
     moduleStatusOptions = new ArrayList<>();
-    moduleStatusOptions.add(new ComboBoxItem("unregistered", "Unregistered"));
     for (ModuleStatus moduleStatus : ModuleStatus.values()) {
       moduleStatusOptions.add(new ComboBoxItem(moduleStatus.getValue(), moduleStatus.getDisplay()));
     }
@@ -659,43 +654,50 @@ public class ModulePage extends JPanel {
     searchFilterActionRow.add(searchFilterGroup);
     searchFilterActionRow.add(studentTabActionGroup, "push, align right");
 
+    String moduleID;
     if (actionContext.equals("edit")) {
       List<User> studentUsers = User.fetchUsers(searchInput, Set.of(Role.STUDENT.getValue()));
       students = studentUsers.stream()
         .map(user -> user instanceof Student student ? student : null)
-        .filter(student -> student != null)
+        .filter(student -> {
+          if (student == null) return false;
+    
+          StudentModule enrollment = StudentModule.getStudentModuleByCompositeKey(student.getID(), editingModule.getID());
+          
+          if (enrollment == null) {
+            return studentModuleStatusConditions.contains("unregistered");
+          } else {
+            return studentModuleStatusConditions.contains(enrollment.getStatus().getValue());
+          }
+        })
         .collect(Collectors.toList());
-
-      studentModules = StudentModule.fetchStudentModules(searchInput, "", editingModule.getID(), studentModuleStatusConditions);
+        moduleID = editingModule.getID();
     } else {
       students = new ArrayList<>();
       studentModules = new ArrayList<>();
+      moduleID = "0";
     }
 
-    smTableModel = new StudentModuleTableModel(students, studentModules);
+    smTableModel = new StudentModuleTableModel(students, moduleID);
     studentCount = new JLabel();
     studentCount.setText("Total Student Queried: " + smTableModel.getRowCount());
     studentCount.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
 
     studentModuleTable = new JTable(smTableModel);
     studentModuleTable.setPreferredScrollableViewportSize(new Dimension(studentModuleTable.getWidth(), 800));
-    // Wrap the table in a JScrollPane to show column headers
     JScrollPane scrollPane = new JScrollPane(studentModuleTable);
     scrollPane.setBackground(App.slate100);
 
-    // Configure table appearance
     studentModuleTable.setFillsViewportHeight(true);
     studentModuleTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-    studentModuleTable.setRowHeight(40); // Add padding to rows
+    studentModuleTable.setRowHeight(40);
 
-    // Style the table header
     JTableHeader tableHeader = studentModuleTable.getTableHeader();
     tableHeader.setBackground(new Color(51, 65, 85));
     tableHeader.setForeground(Color.WHITE);
     tableHeader.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
     tableHeader.setPreferredSize(new Dimension(tableHeader.getPreferredSize().width, 45));
 
-    // Style the table cells
     studentModuleTable.setBackground(Color.WHITE);
     studentModuleTable.setForeground(Color.BLACK);
     studentModuleTable.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
@@ -703,35 +705,104 @@ public class ModulePage extends JPanel {
     studentModuleTable.setShowGrid(true);
     studentModuleTable.setIntercellSpacing(new Dimension(1, 1));
 
-    // Add cell padding with a custom renderer
     DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
-            Component c = super.getTableCellRendererComponent(table, value, 
-                isSelected, hasFocus, row, column);
-            
-            if (c instanceof JLabel) {
-                JLabel label = (JLabel) c;
-                label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-            }
-            
-            // Alternate row colors
-            if (!isSelected) {
-                if (row % 2 == 0) {
-                    c.setBackground(Color.WHITE);
-                } else {
-                    c.setBackground(new Color(248, 250, 252));
-                }
-            }
-            
-            return c;
-        }
+      @Override
+      public Component getTableCellRendererComponent(JTable table, Object value,
+              boolean isSelected, boolean hasFocus, int row, int column) {
+          Component c = super.getTableCellRendererComponent(table, value, 
+              isSelected, hasFocus, row, column);
+          
+          if (c instanceof JLabel) {
+              JLabel label = (JLabel) c;
+              label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+          }
+
+          if (!isSelected) {
+              if (row % 2 == 0) {
+                  c.setBackground(Color.WHITE);
+              } else {
+                  c.setBackground(new Color(248, 250, 252));
+              }
+          }
+          
+          return c;
+      }
     };
 
-    // Apply the renderer to all columns
     for (int i = 0; i < studentModuleTable.getColumnCount(); i++) {
-        studentModuleTable.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+      studentModuleTable.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+    }
+
+    if (actionContext.equals("edit")) {
+      studentModuleTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+          if (e.getValueIsAdjusting()) {
+          return;
+        }
+
+          if (studentModuleTable.getSelectedRow() > -1) {
+            String currStudentID = (String) studentModuleTable.getValueAt(studentModuleTable.getSelectedRow(), 0);
+
+            User selectedUser = User.getUserByMatchingValues("id", currStudentID);
+            if (selectedUser instanceof Student selectedStudent) {
+              selectedStudentDisplay.setText("Current Selected Student: " + selectedStudent.getFirstName() + " " + selectedStudent.getLastName());
+              StudentModule currStudentSM = StudentModule.getStudentModuleByCompositeKey(currStudentID, moduleID);
+              if (currStudentSM != null) {
+                for (int index = 0; index < moduleStatusComboBox.getItemCount(); index++) {
+                  ComboBoxItem item = moduleStatusComboBox.getItemAt(index);
+                  if (item.getValue().equals(currStudentSM.getStatus().getValue())) {
+                    moduleStatusComboBox.setSelectedIndex(index);
+                  }
+                }
+                moduleStatusComboBox.removeAllItems();
+                for (ModuleStatus moduleStatus : ModuleStatus.values()) {
+                  moduleStatusComboBox.addItem(new ComboBoxItem(moduleStatus.getValue(), moduleStatus.getDisplay()));
+                }
+              } else {
+                moduleStatusComboBox.removeAllItems();
+                List<String> excludeModuleStatus = List.of(ModuleStatus.COMPLETED.getValue(), ModuleStatus.SUSPENDED.getValue(), ModuleStatus.DROPPED.getValue());
+                for (ModuleStatus moduleStatus : ModuleStatus.values()) {
+                  if (excludeModuleStatus.contains(moduleStatus.getValue())) {
+                    continue;
+                  }
+                  moduleStatusComboBox.addItem(new ComboBoxItem(moduleStatus.getValue(), moduleStatus.getDisplay()));
+                }
+              }
+            }
+          }
+        }
+      });
+
+      updateBtn.addActionListener(e -> {
+        if (studentModuleTable.getSelectedRow() > -1) {
+          String currStudentID = (String) studentModuleTable.getValueAt(studentModuleTable.getSelectedRow(), 0);
+          StudentModule currStudentSM = StudentModule.getStudentModuleByCompositeKey(currStudentID, moduleID);
+          ComboBoxItem currSelectedStatus = (ComboBoxItem) moduleStatusComboBox.getSelectedItem();
+
+          if (currStudentSM != null) {
+            currStudentSM.setStatus(ModuleStatus.fromValue(currSelectedStatus.getValue()));
+          } else {
+            HashMap<String, String> inputValues = new HashMap<>();
+            inputValues.put("student", currStudentID);
+            inputValues.put("module", moduleID);
+            inputValues.put("status", currSelectedStatus.getValue());
+            inputValues.put("enrolledAt", LocalDate.now().format(Helper.dateTimeFormatter));
+            inputValues.put("points", "0");
+
+            currStudentSM = new StudentModule(inputValues);
+            currStudentSM.update();
+          }
+
+          state.setStudentSearch(searchField.getText());
+          state.setStudentModuleStatusConditions(studentModuleStatusConditions);
+          state.setSelectedModuleID(actionContext.equals("edit") ? editingModule.getID() : null);
+          state.setModulePageCurrTab("student");
+          router.showView(Pages.MODULE, state);
+        } else {
+          JOptionPane.showMessageDialog(router, "No User Selected!", "Error: Unable to update student's module status", JOptionPane.ERROR_MESSAGE);
+        }
+      });
     }
 
     studentTab = new JPanel(new MigLayout("insets 30 0, wrap 1, gapy 10"));

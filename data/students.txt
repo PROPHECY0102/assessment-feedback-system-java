@@ -1,1 +1,4 @@
 4, BSc (Hons) in Computer Science, full, 3.5, 62, 26-11-2023
+7, BSc (Hons) in Software Engineering, full, 2.5, 60.0, 26-06-2025
+9, Diploma In Information Technology, part, 3.12, 80.0, 14-02-2024
+11, Bacherlor of Laws, full, 4.0, 160.0, 01-05-2025

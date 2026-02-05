@@ -4,20 +4,22 @@ import javax.swing.table.AbstractTableModel;
 import com.apu_afs.Helper;
 import com.apu_afs.Models.Student;
 import com.apu_afs.Models.StudentModule;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StudentModuleTableModel extends AbstractTableModel {
   private List<Student> students;
-  private List<StudentModule> studentModules;
+  private String moduleID;
   
   private final String[] columnNames = {
-    "No", "Name", "Program", "Email", 
+    "ID", "Name", "Program", "Email", 
     "Enrollment Status", "Enrolled Date", "Points"
   };
 
-  public StudentModuleTableModel(List<Student> students, List<StudentModule> studentModules) {
+  public StudentModuleTableModel(List<Student> students, String moduleID) {
     this.students = students != null ? 
       students.stream()
         .sorted((s1, s2) -> Integer.compare(
@@ -26,7 +28,7 @@ public class StudentModuleTableModel extends AbstractTableModel {
         .collect(Collectors.toList()) 
       : new ArrayList<>();
       
-      this.studentModules = studentModules != null ? studentModules : new ArrayList<>();
+      this.moduleID = moduleID;
   }
 
   @Override
@@ -48,15 +50,14 @@ public class StudentModuleTableModel extends AbstractTableModel {
   public Object getValueAt(int rowIndex, int columnIndex) {
     Student student = students.get(rowIndex);
     
-    // Find if this student is enrolled in the module (LEFT JOIN simulation)
-    StudentModule enrollment = findStudentModuleEnrollment(student.getID());
+    StudentModule enrollment = StudentModule.getStudentModuleByCompositeKey(student.getID(), moduleID);
     
     switch (columnIndex) {
-      case 0: return String.valueOf(rowIndex);
+      case 0: return student.getID();
       case 1: return student.getFirstName() + " " + student.getLastName();
       case 2: return student.getProgram();
       case 3: return student.getEmail();
-      case 4: return enrollment != null ? enrollment.getStatus().getDisplay() : "Not Enrolled";
+      case 4: return enrollment != null ? enrollment.getStatus().getDisplay() : "Unregistered";
       case 5: return enrollment != null ? 
           enrollment.getEnrolledAt().format(Helper.dateTimeFormatter) : "-";
       case 6: return enrollment != null ? 
@@ -70,27 +71,11 @@ public class StudentModuleTableModel extends AbstractTableModel {
     return String.class;
   }
 
-  private StudentModule findStudentModuleEnrollment(String studentId) {
-    return studentModules.stream()
-      .filter(sm -> sm.getStudent().getID().equals(studentId))
-      .findFirst()
-      .orElse(null);
-  }
-
   public Student getStudentAt(int rowIndex) {
     return students.get(rowIndex);
   }
 
-  public StudentModule getEnrollmentAt(int rowIndex) {
-    Student student = students.get(rowIndex);
-    return findStudentModuleEnrollment(student.getID());
-  }
-  
-  public boolean isStudentEnrolled(int rowIndex) {
-    return getEnrollmentAt(rowIndex) != null;
-  }
-
-  public void setData(List<Student> students, List<StudentModule> studentModules) {
+  public void setData(List<Student> students, String moduleID, Set<String> statuses) {
     this.students = students != null ? 
       students.stream()
       .sorted((s1, s2) -> Integer.compare(
@@ -99,13 +84,12 @@ public class StudentModuleTableModel extends AbstractTableModel {
       .collect(Collectors.toList()) 
       : new ArrayList<>();
       
-    this.studentModules = studentModules != null ? studentModules : new ArrayList<>();
+    this.moduleID = moduleID;
     fireTableDataChanged();
   }
 
   public void clear() {
     students.clear();
-    studentModules.clear();
     fireTableDataChanged();
   }
 }
