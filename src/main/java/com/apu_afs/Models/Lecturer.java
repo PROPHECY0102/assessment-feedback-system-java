@@ -27,7 +27,11 @@ public class Lecturer extends User {
   public static final String filePath = "data/lecturers.txt";
 
   private static final List<NavOption> additionalNavOptions = List.of(
-    new NavOption(Pages.MANAGEMODULES)
+    new NavOption(Pages.MANAGEMODULES),
+    new NavOption(Pages.ASSESSMENTS),
+    new NavOption(Pages.ENTERMARKS),
+    new NavOption(Pages.PROVIDEFEEDBACK),
+    new NavOption(Pages.STUDENTCOMMENTS)
   );
   
   public Lecturer(List<String> props) {

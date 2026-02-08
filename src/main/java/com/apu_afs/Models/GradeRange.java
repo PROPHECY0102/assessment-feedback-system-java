@@ -193,4 +193,14 @@ public class GradeRange {
 
     Data.save(filePath, String.join("\n", updatedGradeRangesData));
   }
+
+  public static String getGradeForPercentage(double percentage) {
+    List<GradeRange> ranges = GradeRange.getListOfGradeRanges();
+    for (GradeRange r : ranges) {
+      if (percentage >= r.getMin() && percentage <= r.getMax()) {
+        return r.getGrade();
+      }
+    }
+    return "-";
+  }
 }

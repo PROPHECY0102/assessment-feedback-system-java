@@ -8,7 +8,11 @@ public enum Pages {
   MANAGEGRADES("Manage Grades"),
   PROFILE("Your Profile"),
   MANAGEMODULES("Manage Modules"),
-  MODULE("Module Form");
+  MODULE("Module Form"),
+  ASSESSMENTS("Assessments"),
+  ENTERMARKS("Enter Marks"),
+  PROVIDEFEEDBACK("Provide Feedback"),
+  STUDENTCOMMENTS("Students Comments");
 
   private final String display;
 

@@ -8,6 +8,10 @@ public class IDIncrement {
   private Integer gradeRangeID;
   private Integer moduleID;
   private Integer studentModuleID;
+  private Integer assessmentID;
+  private Integer assessmentMarkID;
+  private Integer feedbackID;
+  private Integer studentCommentID;
 
   private static final String filePath = "data/idIncrements.txt";
 
@@ -18,6 +22,10 @@ public class IDIncrement {
     this.gradeRangeID = Integer.parseInt(incrementIds.get(1).trim());
     this.moduleID = Integer.parseInt(incrementIds.get(2).trim());
     this.studentModuleID = Integer.parseInt(incrementIds.get(3).trim());
+    this.assessmentID = incrementIds.size() > 4 ? Integer.parseInt(incrementIds.get(4).trim()) : 0;
+    this.assessmentMarkID = incrementIds.size() > 5 ? Integer.parseInt(incrementIds.get(5).trim()) : 0;
+    this.feedbackID = incrementIds.size() > 6 ? Integer.parseInt(incrementIds.get(6).trim()) : 0;
+    this.studentCommentID = incrementIds.size() > 7 ? Integer.parseInt(incrementIds.get(7).trim()) : 0;
   }
 
   public Integer getUserID() {
@@ -44,12 +52,40 @@ public class IDIncrement {
     return this.studentModuleID;
   }
 
+  public Integer getAssessmentID() {
+    this.assessmentID++;
+    saveIDIncrement();
+    return this.assessmentID;
+  }
+
+  public Integer getAssessmentMarkID() {
+    this.assessmentMarkID++;
+    saveIDIncrement();
+    return this.assessmentMarkID;
+  }
+
+  public Integer getFeedbackID() {
+    this.feedbackID++;
+    saveIDIncrement();
+    return this.feedbackID;
+  }
+
+  public Integer getStudentCommentID() {
+    this.studentCommentID++;
+    saveIDIncrement();
+    return this.studentCommentID;
+  }
+
   private void saveIDIncrement() {
     List<String> rows = new ArrayList<>();
     rows.add(String.valueOf(this.userID));
     rows.add(String.valueOf(this.gradeRangeID));
     rows.add(String.valueOf(this.moduleID));
     rows.add(String.valueOf(this.studentModuleID));
+    rows.add(String.valueOf(this.assessmentID));
+    rows.add(String.valueOf(this.assessmentMarkID));
+    rows.add(String.valueOf(this.feedbackID));
+    rows.add(String.valueOf(this.studentCommentID));
 
     Data.save(filePath, String.join("\n", rows));
   }
