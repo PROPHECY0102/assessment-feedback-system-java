@@ -278,8 +278,8 @@ public class ProvideFeedbackPage extends JPanel {
     JLabel assessmentLabel = new JLabel("Assessment: " + mark.getAssessment().getType());
     assessmentLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
     
-    JLabel marksLabel = new JLabel(String.format("Marks: %.2f / 100.00 (%.2f%%)", 
-        mark.getMarksObtained(), mark.getPercentage()));
+    JLabel marksLabel = new JLabel(String.format("Marks: %.2f / %.2f (%.2f%%)", 
+        mark.getMarksObtained(), mark.getAssessment().getTotalMarks(), mark.getPercentage()));
     marksLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 
     panel.add(studentLabel);
