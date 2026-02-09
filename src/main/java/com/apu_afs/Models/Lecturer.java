@@ -30,8 +30,7 @@ public class Lecturer extends User {
     new NavOption(Pages.MANAGEMODULES),
     new NavOption(Pages.ASSESSMENTS),
     new NavOption(Pages.ENTERMARKS),
-    new NavOption(Pages.PROVIDEFEEDBACK),
-    new NavOption(Pages.STUDENTCOMMENTS)
+    new NavOption(Pages.PROVIDEFEEDBACK)
   );
   
   public Lecturer(List<String> props) {
