@@ -38,7 +38,6 @@ import com.apu_afs.Helper;
 import com.apu_afs.Models.AcademicLeader;
 import com.apu_afs.Models.Admin;
 import com.apu_afs.Models.ComboBoxItem;
-import com.apu_afs.Models.Lecturer;
 import com.apu_afs.Models.Module;
 import com.apu_afs.Models.Student;
 import com.apu_afs.Models.StudentModule;
@@ -96,17 +95,12 @@ public class ModulePage extends JPanel {
   JLabel createdAtErrorLabel;
 
   ArrayList<ComboBoxItem> academicLeaderList;
-  ArrayList<ComboBoxItem> lecturerList;
 
   JPanel academicLeaderLecturerRow;
   JPanel academicLeaderFieldGroup;
   JLabel academicLeaderLabel;
   JComboBox<ComboBoxItem> academicLeaderComboBox;
   JLabel academicLeaderErrorLabel;
-  JPanel lecturerFieldGroup;
-  JLabel lecturerLabel;
-  JComboBox<ComboBoxItem> lecturerComboBox;
-  JLabel lecturerErrorLabel;
 
   JPanel actionButtonGroup;
   JButton submitBtn;
@@ -162,12 +156,16 @@ public class ModulePage extends JPanel {
       "[][grow]"   
     ));
 
+
+
     if (state.getCurrUser() == null) {
       SwingUtilities.invokeLater(() -> {
         router.showView(Pages.LOGIN, state);
       });
       return;
     }
+
+
 
     if (state.getSelectedModuleID() == null) {
       actionContext = "add";
@@ -318,44 +316,10 @@ public class ModulePage extends JPanel {
     academicLeaderFieldGroup.add(academicLeaderComboBox);
     academicLeaderFieldGroup.add(academicLeaderErrorLabel);
 
-    lecturerList = new ArrayList<>();
-    for (User user : User.getListOfUsersByMatchingValues("role", Role.LECTURER.getValue())) {
-      if (user instanceof Lecturer lecturerUser) {
-        lecturerList.add(new ComboBoxItem(lecturerUser.getID(), lecturerUser.getFirstName() + " " + lecturerUser.getLastName() + " - " + (lecturerUser.getAcademicLeader() != null ? lecturerUser.getAcademicLeader().getFaculty() : "None")));
-      }
-    }
 
-    lecturerLabel = new JLabel();
-    lecturerLabel.setText("Instructed By: ");
-    lecturerComboBox = new JComboBox<>(lecturerList.stream().toArray(ComboBoxItem[]::new));
-    lecturerComboBox.setBackground(App.slate200);
-    lecturerComboBox.setBorder(BorderFactory.createCompoundBorder(lecturerComboBox.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
-    lecturerComboBox.setPreferredSize(new Dimension(200, 35));
-    lecturerComboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
-      JLabel label = new JLabel();
-      if (value != null) {
-        label.setText(value.getLabelText());
-      }
-      return label;
-    });
-    String selectedLecturerID = actionContext.equals("edit") ? editingModule.getInstructor().getID() : "none";
-    for (int index = 0; index < lecturerComboBox.getItemCount(); index++) {
-      ComboBoxItem item = lecturerComboBox.getItemAt(index);
-      if (item.getValue().equals(selectedLecturerID)) {
-        lecturerComboBox.setSelectedIndex(index);
-        break;
-      }
-    }
-    if (List.of(Role.LECTURER.getValue(), Role.STUDENT.getValue()).contains(state.getCurrUser().getRole().getValue())) {
-      lecturerComboBox.setEnabled(false);
-    }
-    lecturerErrorLabel = new JLabel("\s");
-    lecturerErrorLabel.setForeground(App.red600);
-    lecturerFieldGroup = new JPanel(new MigLayout("insets 0, wrap 1, gap 5"));
-    lecturerFieldGroup.setBackground(App.slate100);
-    lecturerFieldGroup.add(lecturerLabel);
-    lecturerFieldGroup.add(lecturerComboBox);
-    lecturerFieldGroup.add(lecturerErrorLabel);
+
+
+
 
     codeTitleRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
     codeTitleRow.setBackground(App.slate100);
@@ -374,7 +338,9 @@ public class ModulePage extends JPanel {
     academicLeaderLecturerRow = new JPanel(new MigLayout("insets 0, aligny center, gapx 100"));
     academicLeaderLecturerRow.setBackground(App.slate100);
     academicLeaderLecturerRow.add(academicLeaderFieldGroup, "width 50%");
-    academicLeaderLecturerRow.add(lecturerFieldGroup, "width 50%");
+
+
+
 
     textFields = Map.ofEntries(
       Map.entry("code", codeField),
@@ -391,8 +357,7 @@ public class ModulePage extends JPanel {
     );
 
     comboBoxes = Map.ofEntries(
-      Map.entry("leaderID", academicLeaderComboBox),
-      Map.entry("instructorID", lecturerComboBox)
+      Map.entry("leaderID", academicLeaderComboBox)
     );
 
     submitBtn = new JButton();
@@ -433,9 +398,14 @@ public class ModulePage extends JPanel {
       }
 
       for (String key : comboBoxes.keySet()) {
-        ComboBoxItem selectedComboBoxItem = (ComboBoxItem) comboBoxes.get(key).getSelectedItem();
+
+
+
+        ComboBoxItem selectedComboBoxItem =
+          (ComboBoxItem) comboBoxes.get(key).getSelectedItem();
         inputValues.put(key, selectedComboBoxItem.getValue());
       }
+
 
       Validation validation = Module.validate(inputValues);
       if (validation.getSuccess()) {

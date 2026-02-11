@@ -17,12 +17,15 @@ public class GlobalState {
   // no need to save this variable for persistent use
   private String selectedUserID;
   private String selectedModuleID;
+  private String selectedModuleClassID;
 
   // use for searching and filtering
   private String userSearch;
   private Set<String> userRoleConditions;
 
   private String moduleSearch;
+
+  private String moduleClassSearch;
 
   private String studentSearch;
   private Set<String> studentModuleStatusConditions;
@@ -59,6 +62,10 @@ public class GlobalState {
     return this.selectedModuleID;
   }
 
+  public String getSelectedModuleClassID() {
+    return this.selectedModuleClassID;
+  }
+
   public String getUserSearch() {
     return this.userSearch;
   }
@@ -69,6 +76,10 @@ public class GlobalState {
 
   public String getModuleSearch() {
     return this.moduleSearch;
+  }
+
+  public String getModuleClassSearch() {
+    return moduleClassSearch;
   }
 
   public String getStudentSearch() {
@@ -101,6 +112,10 @@ public class GlobalState {
     this.selectedModuleID = selectedModuleID;
   }
 
+  public void setSelectedModuleClassID(String selectedModuleClassID) {
+    this.selectedModuleClassID = selectedModuleClassID;
+  }
+
   public void setUserSearch(String userSearch) {
     this.userSearch = userSearch;
   }
@@ -113,6 +128,10 @@ public class GlobalState {
     this.moduleSearch = moduleSearch;
   }
 
+  public void setModuleClassSearch(String moduleClassSearch) {
+    this.moduleClassSearch = moduleClassSearch;
+  }
+
   public void setStudentSearch(String studentSearch) {
     this.studentSearch = studentSearch;
   }
@@ -120,6 +139,7 @@ public class GlobalState {
   public void setStudentModuleStatusConditions(Set<String> studentModuleStatusConditions) {
     this.studentModuleStatusConditions = studentModuleStatusConditions;
   }
+
   public void setModulePageCurrTab(String modulePageCurrTab) {
     this.modulePageCurrTab = modulePageCurrTab;
   }
@@ -136,9 +156,11 @@ public class GlobalState {
   public void clearState() {
     this.setSelectedUserID(null);
     this.setSelectedModuleID(null);
+    this.setSelectedModuleClassID(null);
     this.setUserSearch(null);
     this.setUserRoleConditions(null);
     this.setModuleSearch(null);
+    this.setModuleClassSearch(null);
     this.setStudentSearch(null);
     this.setStudentModuleStatusConditions(null);
     this.setModulePageCurrTab(null);

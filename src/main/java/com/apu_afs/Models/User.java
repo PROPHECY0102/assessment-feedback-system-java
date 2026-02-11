@@ -152,14 +152,16 @@ public abstract class User {
     for (String userRow : usersData) {
       List<String> props = List.of(userRow.split(", "));
       
-      if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
-        users.add(new Admin(props));
-      } else if (props.get(columnLookup.get("role")).trim().equals(Role.ACADEMIC_LEADER.getValue())) {
-        users.add(new AcademicLeader(props));
-      } else if (props.get(columnLookup.get("role")).trim().equals(Role.LECTURER.getValue())) {
-        users.add(new Lecturer(props));
-      } else {
-        users.add(new Student(props));
+      if (props.get(columnLookup.get(column)).trim().equals(value)) {
+        if (props.get(columnLookup.get("role")).trim().equals(Role.ADMIN.getValue())) {
+          users.add(new Admin(props));
+        } else if (props.get(columnLookup.get("role")).trim().equals(Role.ACADEMIC_LEADER.getValue())) {
+          users.add(new AcademicLeader(props));
+        } else if (props.get(columnLookup.get("role")).trim().equals(Role.LECTURER.getValue())) {
+          users.add(new Lecturer(props));
+        } else {
+          users.add(new Student(props));
+        }
       }
     }
 

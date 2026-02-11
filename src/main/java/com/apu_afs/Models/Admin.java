@@ -28,7 +28,7 @@ public class Admin extends User {
   private static final List<NavOption> additionalNavOptions = List.of(
     new NavOption(Pages.MANAGEUSERS),
     new NavOption(Pages.MANAGEGRADES),
-    new NavOption(Pages.MANAGEMODULES)
+    new NavOption(Pages.MANAGECLASSES)
   );
 
   public Admin(List<String> props) {

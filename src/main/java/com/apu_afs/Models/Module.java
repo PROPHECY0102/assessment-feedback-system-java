@@ -19,7 +19,7 @@ public class Module {
   private double creditHours;
   private LocalDate createdAt;
   private AcademicLeader leader;
-  private Lecturer instructor;
+
 
   public static Map<String, Integer> columnLookup = Map.ofEntries(
     Map.entry("id", 0),
@@ -28,8 +28,7 @@ public class Module {
     Map.entry("description", 3),
     Map.entry("creditHours", 4),
     Map.entry("createdAt", 5),
-    Map.entry("leaderID", 6),
-    Map.entry("instructorID", 7)
+    Map.entry("leaderID", 6)
   );
 
   private static String filePath = "data/modules.txt";
@@ -44,10 +43,6 @@ public class Module {
     User potentialLeader = User.getUserByMatchingValues("id", props.get(columnLookup.get("leaderID")).trim());
     if (potentialLeader instanceof AcademicLeader leader) {
       this.leader = leader;
-    }
-    User potentialInstructor = User.getUserByMatchingValues("id", props.get(columnLookup.get("instructorID")).trim());
-    if (potentialInstructor instanceof Lecturer instructor) {
-      this.instructor = instructor;
     }
   }
 
@@ -70,10 +65,7 @@ public class Module {
     if (potentialLeader instanceof AcademicLeader leader) {
       this.leader = leader;
     }
-    User potentialInstructor = User.getUserByMatchingValues("id", inputValues.get("instructorID"));
-    if (potentialInstructor instanceof Lecturer instructor) {
-      this.instructor = instructor;
-    }
+
   }
 
   public static Module getModuleByMatchingValues(String column, String value) {
@@ -103,35 +95,71 @@ public class Module {
     return modules;
   }
 
-  public static List<Module> fetchModules(String search, User currUser) {
+  public static List<Module> fetchAllModules() {
     List<String> modulesData = Data.fetch(Module.filePath);
     List<Module> modules = new ArrayList<>();
 
-    boolean filterOnlyCurrLecturer = currUser.getRole() == Role.LECTURER;
-    
-    for (String modulesRow : modulesData) {
-      List<String> props = List.of(modulesRow.split(", "));
-      if (filterOnlyCurrLecturer) {
-        if (props.get(columnLookup.get("instructorID")).trim().equals(currUser.getID())) {
+    for (String moduleRow : modulesData) {
+      List<String> props = List.of(moduleRow.split(", "));
+      modules.add(new Module(props));
+    }
+
+    return modules;
+  }
+
+public static List<Module> fetchModules(String search, User currUser) {
+  List<String> modulesData = Data.fetch(Module.filePath);
+  List<Module> modules = new ArrayList<>();
+
+  for (String modulesRow : modulesData) {
+    List<String> props = List.of(modulesRow.split(", "));
+
+      // Lecturer → module 
+      if (currUser.getRole() == Role.LECTURER) {
+
+      boolean teachesModule = ModuleLecturer.fetchAll().stream()
+          .anyMatch(ml ->
+              ml.getModuleID().equals(props.get(columnLookup.get("id"))) &&
+              ml.getLecturerID().equals(currUser.getID())
+          );
+
+
+    if (teachesModule) {
+        modules.add(new Module(props));
+    }
+}
+      // Academic Leader → module lead
+      else if (currUser.getRole() == Role.ACADEMIC_LEADER) {
+        if (props.get(columnLookup.get("leaderID")).trim().equals(currUser.getID().trim())){
           modules.add(new Module(props));
         }
-      } else {
+      }
+      else {
         modules.add(new Module(props));
       }
     }
 
-    List<Module> searchResult = modules.stream()
-    .filter(module -> {
-      return module.getCode().toLowerCase().contains(search.toLowerCase()) ||
-      module.getTitle().toLowerCase().contains(search.toLowerCase()) ||
-      String.valueOf(module.getCreditHours()).contains(search.toLowerCase()) ||
-      (module.getLeader() != null && module.getLeader().getFaculty().contains(search.toLowerCase())) ||
-      (module.getLeader() != null && (module.getLeader().getFirstName() + module.getLeader().getLastName()).contains(search.toLowerCase())) ||
-      (module.getInstructor() != null && (module.getInstructor().getFirstName() + module.getInstructor().getLastName()).contains(search.toLowerCase()));
-    }).collect(Collectors.toList());
-
-    return searchResult;
+    return modules.stream()
+      .filter(module ->
+        module.getCode().toLowerCase().contains(search.toLowerCase()) ||
+        module.getTitle().toLowerCase().contains(search.toLowerCase())
+      )
+      .collect(Collectors.toList());
   }
+    public List<Lecturer> getLecturers() {
+        return ModuleLecturer.fetchAll().stream()
+            .filter(ml -> ml.getModuleID().equals(this.ID))
+            .map(ml -> User.getUserByMatchingValues("id", ml.getLecturerID()))
+            .filter(u -> u instanceof Lecturer)
+            .map(u -> (Lecturer) u)
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+
+
+
+
 
   public static Validation validate(HashMap<String, String> inputValues) {
     Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"code", "title", "description", "creditHours"}, inputValues);
@@ -190,9 +218,7 @@ public class Module {
     return leader;
   }
 
-  public Lecturer getInstructor() {
-    return instructor;
-  }
+
 
   public void setID(String ID) {
     this.ID = ID;
@@ -229,11 +255,6 @@ public class Module {
     update();
   }
 
-  public void setInstructor(Lecturer instructor) {
-    this.instructor = instructor;
-    update();
-  }
-
   public void update() {
     List<String> moduleData = Data.fetch(Module.filePath);
 
@@ -250,8 +271,7 @@ public class Module {
     updatedProps.add(String.valueOf(this.creditHours));
     updatedProps.add(this.createdAt.format(Helper.dateTimeFormatter));
     updatedProps.add(this.leader != null ? this.leader.getID() : "0");
-    updatedProps.add(this.instructor != null ? this.instructor.getID() : "0");
-
+ 
     updatedModuleData.add(String.join(", ", updatedProps));
     Data.save(Module.filePath, String.join("\n", updatedModuleData));
   }
@@ -268,15 +288,24 @@ public class Module {
   }
 
   @Override
-  public boolean equals(Object object) {
-    if (this == object) return true;
-    if (object == null || getClass() != object.getClass()) return false;
-    User that = (User) object;
-    return Objects.equals(this.ID, that.ID);
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Module)) return false;
+    Module module = (Module) o;
+    return Objects.equals(this.ID, module.ID);
   }
+
   
   @Override
   public int hashCode() {
     return Objects.hash(this.ID);
   }
+
+  @Override
+  public String toString() {
+    return this.code + " - " + this.title;
+  }
+
+  
+
 }

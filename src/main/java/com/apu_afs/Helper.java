@@ -3,6 +3,7 @@ package com.apu_afs;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -13,8 +14,11 @@ import javax.swing.ImageIcon;
 public class Helper {
 
   public static final String dateFormat = "dd-MM-yyyy";
-  public static final SimpleDateFormat simpleFormatter = new SimpleDateFormat(dateFormat); // for java.util.Date
+  public static final String timeFormat = "HH:mm";
+  public static final SimpleDateFormat simpleFormatter = new SimpleDateFormat(dateFormat); // for java.util.Date (date)
   public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat); // for java.time.LocalDate
+  public static final SimpleDateFormat simpleTimeFormatter = new SimpleDateFormat(dateFormat); // for java.util.Date (time)
+  public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat); // for java.time.LocalTime
 
   public static String firstLetterUpperCase(String string) {
     return string.substring(0, 1).toUpperCase() + string.substring(1);
@@ -35,11 +39,27 @@ public class Helper {
     }
   }
 
+  public static boolean isValidTime(String timeString) {
+    try {
+      LocalTime.parse(timeString, timeFormatter);
+      return true;
+    } catch (DateTimeParseException e) {
+      return false;
+    }
+  }
+
   public static Date convertLocalDateToDate(LocalDate localDate) {
     if (localDate == null) {
       return null;
     }
     return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+  }
+
+  public static Date convertLocalTimeToDate(LocalTime localTime) {
+    if (localTime == null) {
+      return null;
+    }
+    return Date.from(localTime.atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant());
   }
 
   // use for multiline descriptions like bio

@@ -31,13 +31,19 @@ public class Router extends JPanel {
       case Pages.MANAGEUSERS: return new ManageUsersPage(this, state);
       case Pages.USER: return new UserPage(this, state);
       case Pages.MANAGEGRADES: return new ManageGradesPage(this, state);
+      case Pages.MANAGECLASSES: return new ManageClassesPage(this, state);
+      case Pages.MODULECLASS: return new ModuleClassPage(this, state);
       case Pages.PROFILE: return new ProfilePage(this, state);
       case Pages.MANAGEMODULES: return new ManageModulesPage(this, state);
       case Pages.MODULE: return new ModulePage(this, state);
       case Pages.ASSESSMENTS: return new AssessmentsPage(this, state);
       case Pages.ENTERMARKS: return new EnterMarksPage(this, state);
       case Pages.PROVIDEFEEDBACK: return new ProvideFeedbackPage(this, state);
-      case Pages.STUDENTCOMMENTS: return new StudentCommentsPage(this, state);
+      case Pages.CHECKRESULT: return new CheckResultPage(this, state);
+      case Pages.REGISTERCLASS: return new StudentRegisterClassesPage(this, state);
+      case Pages.FEEDBACKLECTURE: return new StudentFeedbackPage(this, state);
+      case Pages.ASSIGNLECTURE: return new AssignLecturersPage(this, state);
+      case Pages.ANALYSEREPORT: return new AnalysedReportPage(this, state);
       default: return new DashboardPage(this, state);
     }
   }

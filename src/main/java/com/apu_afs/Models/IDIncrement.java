@@ -12,6 +12,9 @@ public class IDIncrement {
   private Integer assessmentMarkID;
   private Integer feedbackID;
   private Integer studentCommentID;
+  private Integer studentClassEnrollmentID;
+  private Integer moduleClassID;
+
 
   private static final String filePath = "data/idIncrements.txt";
 
@@ -26,7 +29,9 @@ public class IDIncrement {
     this.assessmentMarkID = incrementIds.size() > 5 ? Integer.parseInt(incrementIds.get(5).trim()) : 0;
     this.feedbackID = incrementIds.size() > 6 ? Integer.parseInt(incrementIds.get(6).trim()) : 0;
     this.studentCommentID = incrementIds.size() > 7 ? Integer.parseInt(incrementIds.get(7).trim()) : 0;
-  }
+    this.studentClassEnrollmentID = incrementIds.size() > 8 ? Integer.parseInt(incrementIds.get(8).trim()) : 0;
+    this.moduleClassID = Integer.parseInt(incrementIds.get(9).trim());
+ }
 
   public Integer getUserID() {
     this.userID++;
@@ -76,6 +81,19 @@ public class IDIncrement {
     return this.studentCommentID;
   }
 
+  public Integer getStudentClassEnrollmentID() {
+    this.studentClassEnrollmentID++;
+    saveIDIncrement();
+    return this.studentClassEnrollmentID;
+  }
+
+  public Integer getModuleClassID() {
+    this.moduleClassID++;
+    saveIDIncrement();
+    return this.moduleClassID;
+  }
+
+
   private void saveIDIncrement() {
     List<String> rows = new ArrayList<>();
     rows.add(String.valueOf(this.userID));
@@ -86,6 +104,8 @@ public class IDIncrement {
     rows.add(String.valueOf(this.assessmentMarkID));
     rows.add(String.valueOf(this.feedbackID));
     rows.add(String.valueOf(this.studentCommentID));
+    rows.add(String.valueOf(this.studentClassEnrollmentID));
+    rows.add(String.valueOf(this.moduleClassID));
 
     Data.save(filePath, String.join("\n", rows));
   }

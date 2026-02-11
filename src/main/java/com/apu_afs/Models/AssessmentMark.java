@@ -36,6 +36,8 @@ public class AssessmentMark {
     this.recordedAt = LocalDateTime.parse(dateTimeStr, java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
   }
 
+  
+
   public AssessmentMark(HashMap<String, String> inputValues) {
     String assessmentMarkID;
     if (inputValues.get("id") == null) {
@@ -107,6 +109,25 @@ public class AssessmentMark {
     }).collect(Collectors.toList());
 
     return searchResult;
+  }
+
+
+
+
+  public static boolean existsAssessmentMarkByAssessmentAndStudent(String assessmentID, String studentID) {
+    List<String> marksData = Data.fetch(AssessmentMark.filePath);
+    
+    for (String markRow : marksData) {
+      List<String> props = List.of(markRow.split(", "));
+      String markAssessmentID = props.get(columnLookup.get("assessment")).trim();
+      String markStudentID = props.get(columnLookup.get("student")).trim();
+      
+      if (markAssessmentID.equals(assessmentID) && markStudentID.equals(studentID)) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   public static Validation validate(HashMap<String, String> inputValues) {

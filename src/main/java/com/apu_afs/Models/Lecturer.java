@@ -27,7 +27,6 @@ public class Lecturer extends User {
   public static final String filePath = "data/lecturers.txt";
 
   private static final List<NavOption> additionalNavOptions = List.of(
-    new NavOption(Pages.MANAGEMODULES),
     new NavOption(Pages.ASSESSMENTS),
     new NavOption(Pages.ENTERMARKS),
     new NavOption(Pages.PROVIDEFEEDBACK)
@@ -131,4 +130,24 @@ public class Lecturer extends User {
 
     Data.save(filePath, String.join("\n", updatedData));
   } 
+
+  @Override
+  public String toString() {
+    return this.getFirstName() + " " + this.getLastName();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Lecturer)) return false;
+    Lecturer l = (Lecturer) o;
+    return this.getID().equals(l.getID());
+  }
+
+  @Override
+  public int hashCode() {
+    return this.getID().hashCode();
+  }
+
+
 }

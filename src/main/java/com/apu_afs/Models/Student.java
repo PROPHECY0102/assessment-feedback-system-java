@@ -30,7 +30,9 @@ public class Student extends User {
   public static final String filePath = "data/students.txt";
 
   private static final List<NavOption> additionalNavOptions = List.of(
-    new NavOption(Pages.MANAGEMODULES)
+    new NavOption(Pages.REGISTERCLASS),
+    new NavOption(Pages.CHECKRESULT),
+    new NavOption(Pages.FEEDBACKLECTURE)
   );
   
   public Student(List<String> props) {
@@ -53,6 +55,19 @@ public class Student extends User {
     this.enrolledAt = LocalDate.parse(inputValues.get("enrolledAt"), Helper.dateTimeFormatter);
     this.navOptions.addAll(additionalNavOptions);
   }
+
+  public static Student getStudentByMatchingValues(String column, String value) {
+    List<String> studentData = Data.fetch(filePath);
+
+    for (String row : studentData) {
+        List<String> props = List.of(row.split(", "));
+        if (props.get(columnLookup.get(column)).trim().equals(value)) {
+            return new Student(props);
+        }
+    }
+    return null;
+}
+
 
   public static Validation validate(HashMap<String, String> inputValues) {
     Validation cannotBeEmptyCheck = Validation.isEmptyCheck(new String[] {"program", "cgpa", "creditHours"}, inputValues);

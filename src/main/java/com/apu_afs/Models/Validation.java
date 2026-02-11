@@ -111,6 +111,21 @@ public class Validation {
     return response;
   }
 
+  public static Validation validTimeCheck(String[] columns, HashMap<String, String> inputValues) {
+    Validation response = new Validation(true);
+
+    for (String column : columns) {
+      if (!Helper.isValidTime(inputValues.get(column))) {
+        response.setMessage(Helper.firstLetterUpperCase(column) + " must be a valid time format (HH:mm) example: '15:30'");
+        response.setSuccess(false);
+        response.setField(column);
+        break;
+      }
+    }
+
+    return response;
+  }
+
   public static Validation validDateCheck(String[] columns, HashMap<String, String> inputValues) {
     Validation response = new Validation(true);
 

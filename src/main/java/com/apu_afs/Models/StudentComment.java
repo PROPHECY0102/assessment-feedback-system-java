@@ -58,7 +58,7 @@ public class StudentComment {
     List<String> commentsData = Data.fetch(StudentComment.filePath);
     
     for (String commentRow : commentsData) {
-      List<String> props = List.of(commentRow.split(", ", 5)); // Limit split to 5 parts due to comment may have commas
+      List<String> props = List.of(commentRow.split(", ", 5)); 
       if (props.get(columnLookup.get(column)).trim().equals(value)) {
         return new StudentComment(props);
       }
@@ -86,20 +86,28 @@ public class StudentComment {
     List<StudentComment> comments = new ArrayList<>();
 
     boolean filterOnlyCurrLecturer = currUser.getRole() == Role.LECTURER;
-    
+
     for (String commentRow : commentsData) {
       List<String> props = List.of(commentRow.split(", ", 5));
       StudentComment comment = new StudentComment(props);
+
       if (filterOnlyCurrLecturer) {
-        // Only show comments from students on lecturer's modules
-        if (comment.getModule() != null && comment.getModule().getInstructor() != null && 
-            comment.getModule().getInstructor().getID().equals(currUser.getID())) {
+
+        boolean isAssigned = ModuleLecturer.fetchAll().stream()
+            .anyMatch(ml ->
+                ml.getModuleID().equals(comment.getModule().getID()) &&
+                ml.getLecturerID().equals(currUser.getID())
+            );
+
+        if (isAssigned) {
           comments.add(comment);
         }
+
       } else {
         comments.add(comment);
       }
     }
+
 
     List<StudentComment> searchResult = comments.stream()
     .filter(comment -> {
@@ -157,7 +165,7 @@ public class StudentComment {
     );
   }
 
-  // Getters and Setters
+
   public String getID() {
     return ID;
   }

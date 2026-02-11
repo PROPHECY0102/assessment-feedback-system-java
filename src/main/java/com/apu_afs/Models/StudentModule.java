@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 import com.apu_afs.Helper;
 import com.apu_afs.Models.Enums.ModuleStatus;
 
@@ -17,17 +18,20 @@ public class StudentModule {
   private String ID;
   private Student student; // composite key
   private Module module; // composite key
+  private String classCode;  
   private ModuleStatus status;
   private LocalDate enrolledAt;
   private double points;
+  
 
   public static Map<String, Integer> columnLookup = Map.ofEntries(
     Map.entry("id", 0),
     Map.entry("student", 1),
     Map.entry("module", 2),
-    Map.entry("status", 3),
-    Map.entry("enrolledAt", 4),
-    Map.entry("points", 5)
+    Map.entry("classCode", 3), 
+    Map.entry("status", 4),
+    Map.entry("enrolledAt", 5),
+    Map.entry("points", 6)
   );
 
   private static String filePath = "data/studentModules.txt";
@@ -37,6 +41,8 @@ public class StudentModule {
     User potentialUser = User.getUserByMatchingValues("id", props.get(columnLookup.get("student")).trim());
     this.student = potentialUser instanceof Student studentUser ? studentUser : null;
     this.module = Module.getModuleByMatchingValues("id", props.get(columnLookup.get("module")).trim());
+    this.classCode = props.get(columnLookup.get("classCode")).trim();
+
     this.status = ModuleStatus.fromValue(props.get(columnLookup.get("status")).trim());
     this.enrolledAt = LocalDate.parse(props.get(columnLookup.get("enrolledAt")).trim(), Helper.dateTimeFormatter);
     this.points = Double.parseDouble(props.get(columnLookup.get("points")).trim());
@@ -55,6 +61,8 @@ public class StudentModule {
     User potentialUser = User.getUserByMatchingValues("id", inputValues.get("student"));
     this.student = potentialUser instanceof Student studentUser ? studentUser : null;
     this.module = Module.getModuleByMatchingValues("id", inputValues.get("module"));
+    this.classCode = inputValues.get("classCode");
+
     this.status = ModuleStatus.fromValue(inputValues.get("status"));
     this.enrolledAt = LocalDate.parse(inputValues.get("enrolledAt"), Helper.dateTimeFormatter);
     this.points = Double.parseDouble(inputValues.get("points"));
@@ -86,6 +94,21 @@ public class StudentModule {
 
     return studentModules;
   }
+
+    public static List<StudentModule> getListByStudent(String studentID) {
+    List<String> data = Data.fetch("data/studentModules.txt");
+    List<StudentModule> result = new ArrayList<>();
+
+    for (String row : data) {
+      List<String> props = List.of(row.split(", "));
+      if (props.get(columnLookup.get("student")).equals(studentID)) {
+        result.add(new StudentModule(props));
+      }
+    }
+
+    return result;
+  }
+
 
   public static StudentModule getStudentModuleByCompositeKey(String studentID, String moduleID) {
     List<String> studentModulesData = Data.fetch(StudentModule.filePath);
@@ -134,6 +157,25 @@ public class StudentModule {
     return searchResult;
   }
 
+  public static StudentModule getByStudentAndClassCode(
+  String studentID,
+  String classCode
+) {
+  List<String> data = Data.fetch(filePath);
+
+  for (String row : data) {
+    List<String> props = List.of(row.split(", "));
+    String sID = props.get(columnLookup.get("student")).trim();
+    String cCode = props.get(columnLookup.get("classCode")).trim();
+
+    if (sID.equals(studentID) && cCode.equals(classCode)) {
+      return new StudentModule(props);
+    }
+  }
+  return null;
+}
+
+
   public String getID() {
     return this.ID;
   }
@@ -146,6 +188,11 @@ public class StudentModule {
     return this.module;
   }
 
+  public String getClassCode() {
+  return classCode;
+}
+
+
   public ModuleStatus getStatus() {
     return this.status;
   }
@@ -157,6 +204,12 @@ public class StudentModule {
   public double getPoints() {
     return this.points;
   }
+
+  public String getModuleID() {
+    return this.module != null ? this.module.getID() : null;
+  }
+
+
 
   public void setID(String ID) {
     this.ID = ID;
@@ -200,6 +253,7 @@ public class StudentModule {
     updatedProps.add(this.ID);
     updatedProps.add(this.student != null ? this.student.getID() : "0");
     updatedProps.add(this.module != null ? this.module.getID() : "0");
+    updatedProps.add(this.classCode);
     updatedProps.add(this.status.getValue());
     updatedProps.add(this.enrolledAt.format(Helper.dateTimeFormatter));
     updatedProps.add(String.valueOf(this.points));
@@ -218,6 +272,8 @@ public class StudentModule {
 
     Data.save(StudentModule.filePath, String.join("\n", updatedStudentModulesData));
   }
+  
+  
 
   @Override
   public boolean equals(Object object) {

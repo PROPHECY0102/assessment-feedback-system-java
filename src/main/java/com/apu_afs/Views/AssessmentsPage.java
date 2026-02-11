@@ -149,12 +149,19 @@ public class AssessmentsPage extends JPanel {
     editBtn.setFocusable(false);
     editBtn.setBorder(BorderFactory.createCompoundBorder(editBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
     editBtn.addActionListener(e -> {
-      if (selectedRow != -1) {
-        showEditAssessmentDialog(state, selectedRow);
+      int viewRow = table.getSelectedRow();
+
+      if (viewRow != -1) {
+        int modelRow = table.convertRowIndexToModel(viewRow);
+        showEditAssessmentDialog(state, modelRow);
       } else {
-        JOptionPane.showMessageDialog(this, "Please select an assessment first", "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, 
+          "Please select an assessment first", 
+          "Warning", 
+          JOptionPane.WARNING_MESSAGE);
       }
     });
+
 
     deleteBtn = new JButton();
     deleteBtn.setText("Delete");
@@ -278,7 +285,8 @@ public class AssessmentsPage extends JPanel {
     panel.setBackground(App.slate100);
 
     // Get lecturer's modules only
-    List<Module> modules = Module.getListOfModuleByMatchingValues("instructorID", state.getCurrUser().getID());
+    List<Module> modules = Module.fetchModules("", state.getCurrUser());
+
     
     if (modules.isEmpty()) {
       JOptionPane.showMessageDialog(this, "You don't have any modules assigned. Please contact your academic leader.", "No Modules", JOptionPane.WARNING_MESSAGE);
@@ -340,7 +348,9 @@ public class AssessmentsPage extends JPanel {
     JPanel panel = new JPanel(new MigLayout("insets 10, wrap 1, gapy 10"));
     panel.setBackground(App.slate100);
 
-    List<Module> modules = Module.getListOfModuleByMatchingValues("instructorID", state.getCurrUser().getID());
+   // List<Module> modules = Module.getListOfModuleByMatchingValues("instructorID", state.getCurrUser().getID());
+    List<Module> modules = Module.fetchModules("", state.getCurrUser());
+
 
     JLabel nameLabel = new JLabel("Assessment Name:");
     JTextField nameField = new JTextField(assessment.getName(), 20);

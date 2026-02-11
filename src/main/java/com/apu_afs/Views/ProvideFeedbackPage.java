@@ -151,10 +151,10 @@ public class ProvideFeedbackPage extends JPanel {
     searchFilterActionRow.add(searchGroup);
     searchFilterActionRow.add(actionBtnsContainer, "push, align right");
 
-    // Initialize feedbacks - only show marked assessments
+    
     initializeFeedbacksForMarkedAssessments(state);
 
-    // Table
+    
     feedbacks = Feedback.fetchFeedbacks(searchInput, state.getCurrUser());
     feedbackTableModel = new FeedbackTableModel(feedbacks);
 
@@ -235,11 +235,11 @@ public class ProvideFeedbackPage extends JPanel {
     List<AssessmentMark> marks = AssessmentMark.fetchAssessmentMarks("", state.getCurrUser());
     
     for (AssessmentMark mark : marks) {
-      // Check if feedback exists for this mark
+      
       List<Feedback> existingFeedbacks = Feedback.getListOfFeedbacksByMatchingValues("assessmentMark", mark.getID());
       
       if (existingFeedbacks.isEmpty()) {
-        // Create empty feedback for this mark
+        
         HashMap<String, String> feedbackData = new HashMap<>();
         feedbackData.put("assessmentMark", mark.getID());
         feedbackData.put("content", "");
@@ -271,7 +271,6 @@ public class ProvideFeedbackPage extends JPanel {
     JPanel panel = new JPanel(new MigLayout("insets 10, wrap 1, gapy 10"));
     panel.setBackground(App.slate100);
 
-    // Display information
     JLabel studentLabel = new JLabel("Student: " + mark.getStudent().getFirstName() + " " + mark.getStudent().getLastName());
     studentLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
     

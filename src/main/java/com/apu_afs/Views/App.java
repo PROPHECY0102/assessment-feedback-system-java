@@ -25,9 +25,13 @@ public class App extends JFrame {
   public static final Color slate200 = new Color(0xe2e8f0);
   public static final Color slate100 = new Color(0xf1f5f9);
 
+  public static final Color gray800 = new Color(0x1e2939);
+
   public static final Color blue900 = new Color(0x1c398e);
   public static final Color blue800 = new Color(0x193cb8);
   public static final Color blue600 = new Color(0x155dfc);
+
+  public static final Color purple600 = new Color(0x7f22fe);
 
   public static final Color green600 = new Color(0x00a63e);
 

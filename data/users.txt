@@ -1,7 +1,7 @@
-4, lola, 789, Lola, Martinez, female, 02-12-2003, lola123@mail.com, 345678912, student
+4, lola, 789loLa#, Lola, Martinez, female, 02-12-2003, lola123@mail.com, 345678912, student
 2, john, 123456%As, John, Doe, male, 28-11-1986, john123@mail.com, 12345678, lecturer
 6, emily, Poly123#, Emily, Smith, female, 19-10-2000, emily123@gmail.com, 66526179, lecturer
-1, jesse555, 456, Jesse, Pinkman, male, 21-09-1998, jesse555@mail.com, 234567891, admin
+1, jesse555, 456Jesse&, Jesse, Pinkman, male, 21-09-1998, jesse555@mail.com, 234567891, admin
 3, joyce, Joy112#, Joyce, Whitman, female, 01-05-1993, joyce238@yahoo.com, 88372771, academic
 7, nacho123, 999888@#Na, Ignacio, Varga, male, 21-08-2003, nacho765@mail.com, 123456789, student
 8, walter098, Walter223@#!, Walter, White, male, 12-09-2005, mrwhite@mail.com, 7287634891, academic

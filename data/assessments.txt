@@ -1,4 +1,9 @@
 1, Quiz test, 1, Quiz, 50.0, 6, 08-02-2026
 4, Assignments OODJ, 1, Assignment, 100.0, 6, 08-02-2026
-5, Video Presentation, 2, Assignment, 100.0, 2, 08-02-2026
 6, Final Sem 1, 3, Final Exam, 200.0, 10, 08-02-2026
+7, test, 3, Quiz, 30.0, 10, 10-02-2026
+13, baru, 1, Presentation, 100.0, 6, 11-02-2026
+15, tukar nama, 1, Quiz, 95.0, 6, 11-02-2026
+16, errr, 3, Assignment, 100.0, 2, 11-02-2026
+18, testing 1 assesmnt name, 1, Quiz, 100.0, 10, 11-02-2026
+19, trtdyrtr, 5, Quiz, 100.0, 2, 11-02-2026

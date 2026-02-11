@@ -344,9 +344,18 @@ public class EnterMarksPage extends JPanel {
         return;
       }
 
+      Assessment selectedAssessment = (Assessment) assessmentCombo.getSelectedItem();
+      Student selectedStudent = (Student) studentCombo.getSelectedItem();
+
+      // Check for duplicate assessment mark
+      if (AssessmentMark.existsAssessmentMarkByAssessmentAndStudent(selectedAssessment.getID(), selectedStudent.getID())) {
+        JOptionPane.showMessageDialog(this, "A mark for this student and assessment already exists. Please edit the existing mark instead.", "Duplicate Mark", JOptionPane.WARNING_MESSAGE);
+        return;
+      }
+
       HashMap<String, String> inputValues = new HashMap<>();
-      inputValues.put("assessment", ((Assessment) assessmentCombo.getSelectedItem()).getID());
-      inputValues.put("student", ((Student) studentCombo.getSelectedItem()).getID());
+      inputValues.put("assessment", selectedAssessment.getID());
+      inputValues.put("student", selectedStudent.getID());
       inputValues.put("marksObtained", marksField.getText().trim());
       inputValues.put("recordedAt", LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
 

@@ -27,7 +27,9 @@ public class AcademicLeader extends User {
   public static final String filePath = "data/academicLeaders.txt";
 
   private static final List<NavOption> additionalNavOptions = List.of(
-    new NavOption(Pages.MANAGEMODULES)
+    new NavOption(Pages.MANAGEMODULES),
+    new NavOption(Pages.ASSIGNLECTURE),
+    new NavOption(Pages.ANALYSEREPORT)
   );
   
   public AcademicLeader(List<String> props) {
