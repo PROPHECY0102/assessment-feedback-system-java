@@ -289,6 +289,11 @@ public abstract class User {
       return emailRegexCheck;
     }
 
+    Validation validPhoneNumberCheck = Validation.regexCheck(new String[] {"phoneNumber"}, inputValues, "^\\+?\\d+(-?\\d+)*$", "must be a valid phone number");
+    if (!validPhoneNumberCheck.getSuccess()) {
+      return validPhoneNumberCheck;
+    }
+
     // Check if Date of birth is valid input and not after the present date
     Validation validDateCheck = Validation.validDateCheck(new String[] {"dob"}, inputValues);
     if (!validDateCheck.getSuccess()) {
@@ -346,6 +351,11 @@ public abstract class User {
     Validation emailRegexCheck = Validation.regexCheck(new String[] {"email"}, inputValues, "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", "must be a valid email address");
     if (!emailRegexCheck.getSuccess()) {
       return emailRegexCheck;
+    }
+
+    Validation validPhoneNumberCheck = Validation.regexCheck(new String[] {"phoneNumber"}, inputValues, "^\\+?\\d+(-?\\d+)*$", "must be a valid phone number");
+    if (!validPhoneNumberCheck.getSuccess()) {
+      return validPhoneNumberCheck;
     }
 
     if (!inputValues.get("currentPassword").isEmpty()) {
