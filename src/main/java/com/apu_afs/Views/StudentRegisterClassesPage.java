@@ -200,7 +200,7 @@ public class StudentRegisterClassesPage extends JPanel {
       HashMap<String, String> input = new HashMap<>();
       input.put("student", currStudent.getID());
       input.put("module", mc.getModule().getID());
-      input.put("classCode", mc.getId());
+      input.put("classCode", mc.getClassCode());
       input.put("status", ModuleStatus.ACTIVE.getValue());
       input.put("enrolledAt", LocalDate.now().format(Helper.dateTimeFormatter));
       input.put("points", "0");
@@ -265,7 +265,7 @@ public class StudentRegisterClassesPage extends JPanel {
 
     for (StudentModule sm : enrolled) {
       for (ModuleClass c : classes) {
-        if (c.getId().equals(sm.getClassCode())) {
+        if (c.getClassCode().equals(sm.getClassCode())) {
           byDay.computeIfAbsent(c.getDay(), k -> new ArrayList<>()).add(c);
         }
       }
