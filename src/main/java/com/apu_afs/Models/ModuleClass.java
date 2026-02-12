@@ -92,7 +92,10 @@ public class ModuleClass {
     }
 
     List<ModuleClass> searchResult = classes.stream().filter(moduleClass -> {
-      return (moduleClass.getModule().getCode().toLowerCase().contains(search.toLowerCase()) ||
+      return (moduleClass.getClassCode().toLowerCase().contains(search.toLowerCase()) ||
+        moduleClass.getDay().toLowerCase().contains(search.toLowerCase()) ||
+        moduleClass.getClassroom().toLowerCase().contains(search.toLowerCase()) ||
+        moduleClass.getModule().getCode().toLowerCase().contains(search.toLowerCase()) ||
         moduleClass.getModule().getTitle().toLowerCase().contains(search.toLowerCase()) ||
         (moduleClass.getLecturer().getFirstName() + moduleClass.getLecturer().getLastName()).toLowerCase().contains(search.toLowerCase()) ||
         (moduleClass.getLecturer().getAcademicLeader() != null && moduleClass.getLecturer().getAcademicLeader().getFaculty().toLowerCase().contains(search.toLowerCase())));
