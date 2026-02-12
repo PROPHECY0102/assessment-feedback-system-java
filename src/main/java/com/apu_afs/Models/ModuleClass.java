@@ -128,6 +128,11 @@ public class ModuleClass {
       return validTimeCheck;
     }
 
+    Validation validTimeRangeCheck = Validation.validTimeRangeCheck(inputValues.get("startTime"), inputValues.get("endTime"), "Class");
+    if (!validTimeRangeCheck.getSuccess()) {
+      return validTimeRangeCheck;
+    }
+
     return new Validation("Success", true);
   }
 

@@ -233,7 +233,7 @@ public class ModuleClassPage extends JPanel {
     classroomField.setBorder(BorderFactory.createCompoundBorder(classroomField.getBorder(), BorderFactory.createEmptyBorder(10, 15, 10, 15)));
     classroomField.setPreferredSize(new Dimension(600, 35));
     if (actionContext.equals("edit")) {
-      classroomField.setText(editingModuleClass.getClassCode());
+      classroomField.setText(editingModuleClass.getClassroom());
     }
     classroomErrorLabel = new JLabel("\s");
     classroomErrorLabel.setForeground(App.red600);

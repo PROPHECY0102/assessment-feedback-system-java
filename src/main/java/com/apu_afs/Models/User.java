@@ -10,16 +10,16 @@ import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Models.Enums.Role;
 
 public abstract class User {
-  String ID;
-  String username;
-  String password;
-  String firstName;
-  String lastName;
-  Gender gender;
-  LocalDate dob;
-  String email;
-  String phoneNumber;
-  Role role;
+  protected String ID;
+  protected String username;
+  protected String password;
+  protected String firstName;
+  protected String lastName;
+  protected Gender gender;
+  protected LocalDate dob;
+  protected String email;
+  protected String phoneNumber;
+  protected Role role;
 
   List<NavOption> navOptions;
 

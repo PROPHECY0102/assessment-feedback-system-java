@@ -1,6 +1,7 @@
 package com.apu_afs.Models;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 import com.apu_afs.Helper;
@@ -123,6 +124,27 @@ public class Validation {
       }
     }
 
+    return response;
+  }
+
+  public static Validation validTimeRangeCheck(String startTimeStr, String endTimeStr, String subject) {
+    Validation response = new Validation(true);
+
+    LocalTime startTime = LocalTime.parse(startTimeStr);
+    LocalTime endTime= LocalTime.parse(endTimeStr);
+
+    if (endTime.isAfter(startTime)) {
+      return response;
+    } else if (endTime.isBefore(startTime)) {
+      response.setMessage(subject + " End Time cannot be ahead of " + subject + " Start Time!");
+      response.setSuccess(false);
+      response.setField("endTime");
+    } else {
+      response.setMessage(subject + " End Time cannot be the same as " + subject + " Start Time!");
+      response.setSuccess(false);
+      response.setField("endTime");
+    }
+    
     return response;
   }
 
