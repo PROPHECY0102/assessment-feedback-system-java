@@ -7,7 +7,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -15,16 +15,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.JSeparator;
-
 
 import net.miginfocom.swing.MigLayout;
 
 import com.apu_afs.GlobalState;
+import com.apu_afs.Helper;
 import com.apu_afs.Models.Enums.Pages;
 import com.apu_afs.Models.Enums.ReportType;
 import com.apu_afs.Models.Module;
@@ -37,6 +37,8 @@ public class AnalysedReportPage extends JPanel {
 
   private JTable table;
   private JLabel titleLabel;
+  private String currentFilterId;
+  private ReportType currentReportType;
 
   public AnalysedReportPage(Router router, GlobalState state) {
 
@@ -69,6 +71,7 @@ public class AnalysedReportPage extends JPanel {
       new MigLayout("insets 25 20, gapx 10, align center")
     );
     btnRow.setBackground(App.slate100);
+
     JSeparator divider = new JSeparator();
     divider.setForeground(new Color(148, 163, 184));
     divider.setBackground(new Color(148, 163, 184));
@@ -100,10 +103,11 @@ public class AnalysedReportPage extends JPanel {
         Component c = super.getTableCellRendererComponent(
           table, value, isSelected, hasFocus, row, col
         );
-        if (!isSelected)
+        if (!isSelected) {
           c.setBackground(row % 2 == 0
             ? Color.WHITE
             : new Color(248, 250, 252));
+        }
         return c;
       }
     });
@@ -115,12 +119,86 @@ public class AnalysedReportPage extends JPanel {
     body.add(titleLabel, "growx, align center, gapy 10");
     body.add(scroll, "grow");
 
+    JButton printBtn = new JButton("Print");
+    printBtn.setBackground(new Color(34, 197, 94));
+    printBtn.setForeground(Color.WHITE);
+    printBtn.setFocusable(false);
+    printBtn.setPreferredSize(new Dimension(200, 45));
+    printBtn.setIcon(
+      Helper.iconResizer(
+        new ImageIcon("assets/download-icon.png"),
+        18,
+        18
+      )
+    );
+
+    printBtn.addActionListener(e -> {
+
+      int selectedRow = table.getSelectedRow();
+
+      if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(
+          this,
+          "Please select a row first!",
+          "Information",
+          JOptionPane.INFORMATION_MESSAGE
+        );
+        return;
+      }
+
+      StringBuilder msg = new StringBuilder();
+
+      if (currentReportType == ReportType.GRADE_DISTRIBUTION
+        && currentFilterId != null) {
+
+        String[] parts = currentFilterId.split("\\|");
+        String moduleId = parts[0];
+        String lecturerId = parts[1];
+
+        Module module =
+          Module.getModuleByMatchingValues("id", moduleId);
+
+        String moduleName =
+          module != null ? module.getTitle() : moduleId;
+
+        String lecturerName = "All Lecturers";
+
+        if (!lecturerId.equals("all")) {
+          var user = com.apu_afs.Models.User
+            .getUserByMatchingValues("id", lecturerId);
+
+          if (user != null) {
+            lecturerName =
+              user.getFirstName() + " " + user.getLastName();
+          }
+        }
+
+        msg.append("Module: ").append(moduleName).append("\n");
+        msg.append("Lecturer: ").append(lecturerName).append("\n\n");
+      }
+
+      // Row details
+      for (int col = 0; col < table.getColumnCount(); col++) {
+        msg.append(table.getColumnName(col))
+          .append(": ")
+          .append(table.getValueAt(selectedRow, col))
+          .append("\n");
+      }
+
+      JOptionPane.showMessageDialog(
+        this,
+        msg.toString(),
+        "Information",
+        JOptionPane.INFORMATION_MESSAGE
+      );
+    });
+
+    body.add(printBtn, "align right, gapy 10");
+
     add(header, "span, growx, wrap");
     add(nav, "growy");
     add(body, "grow");
   }
-
-  
 
   private void addReportButton(
     JPanel panel, GlobalState state, ReportType type
@@ -134,8 +212,6 @@ public class AnalysedReportPage extends JPanel {
     panel.add(btn);
   }
 
-
-
   private void loadReport(GlobalState state, ReportType type) {
 
     Report report = AnalyseReport.getReport(type);
@@ -143,7 +219,6 @@ public class AnalysedReportPage extends JPanel {
 
     String filterId = null;
 
-    
     if (type == ReportType.GRADE_DISTRIBUTION) {
 
       List<String> raw =
@@ -154,8 +229,8 @@ public class AnalysedReportPage extends JPanel {
       for (String r : raw) {
         Module m = new Module(List.of(r.split(", ")));
         if (m.getLeader() != null &&
-            m.getLeader().getID()
-              .equals(state.getCurrUser().getID())) {
+          m.getLeader().getID()
+            .equals(state.getCurrUser().getID())) {
           modules.add(m);
         }
       }
@@ -166,34 +241,33 @@ public class AnalysedReportPage extends JPanel {
       JComboBox<Object> lecturerBox =
         new JComboBox<>();
 
-    moduleBox.addActionListener(e -> {
+      moduleBox.addActionListener(e -> {
 
-    lecturerBox.removeAllItems();
-    lecturerBox.addItem("All Lecturers");
+        lecturerBox.removeAllItems();
+        lecturerBox.addItem("All Lecturers");
 
-    Module m = (Module) moduleBox.getSelectedItem();
+        Module m = (Module) moduleBox.getSelectedItem();
 
-    if (m != null) {
+        if (m != null) {
 
-        List<com.apu_afs.Models.ModuleLecturer> assignments =
+          List<com.apu_afs.Models.ModuleLecturer> assignments =
             com.apu_afs.Models.ModuleLecturer.fetchAll();
 
-        assignments.stream()
+          assignments.stream()
             .filter(ml -> ml.getModuleID().equals(m.getID()))
             .forEach(ml -> {
-                com.apu_afs.Models.User u =
-                    com.apu_afs.Models.User.getUserByMatchingValues(
-                        "id",
-                        ml.getLecturerID()
-                    );
+              com.apu_afs.Models.User u =
+                com.apu_afs.Models.User.getUserByMatchingValues(
+                  "id",
+                  ml.getLecturerID()
+                );
 
-                if (u instanceof com.apu_afs.Models.Lecturer) {
-                    lecturerBox.addItem(u);
-                }
+              if (u instanceof com.apu_afs.Models.Lecturer) {
+                lecturerBox.addItem(u);
+              }
             });
-    }
-});
-
+        }
+      });
 
       moduleBox.setSelectedIndex(0);
 
@@ -240,6 +314,9 @@ public class AnalysedReportPage extends JPanel {
       if (c == -1) return;
       filterId = c == 0 ? "student" : "lecturer";
     }
+
+    this.currentFilterId = filterId;
+    this.currentReportType = type;
 
     table.setModel(new DefaultTableModel(
       report.generate(state, filterId),
