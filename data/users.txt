@@ -6,6 +6,24 @@
 8, walter098, Walter223@#!, Walter, White, male, 12-09-2005, mrwhite@mail.com, 7287634891, academic
 9, badger221, Badger9920@!, Brandon, Mayhew, male, 17-10-2002, badgerBB@yahoo.com, 3217738291, student
 5, asd, asdASD#123, Derek, Zoolander, male, 16-07-1995, asd@asd.com, 31435464324, academic
-10, lim123, Lim123@#%, Lim, Chun Cheak, male, 24-09-1995, chuncheak.lim@apu.edu.my, 0389961000, lecturer
 11, wexler_21, weXler331@1, Kim, Wexler, female, 13-02-2004, kimwexler@gmail.com, 328187721, student
 1, jesse555, 456Jesse&, Jesse, Pinkman, male, 21-09-1998, jesse555@mail.com, +6017-679-1312, admin
+10, lim123, Lim123@#%, Lim, Hao Ming, male, 24-09-1995, haominglim@outlook.com, 38929911, lecturer
+12, sarah_chen, Sarah2024@#, Sarah, Chen, female, 15-03-1988, sarahchen@mail.com, 91827364, lecturer
+13, marcus_wong, Marcus456$!, Marcus, Wong, male, 22-07-1985, marcuswong@outlook.com, 92837465, lecturer
+14, priya_kumar, Priya789@#, Priya, Kumar, female, 08-11-1990, priyakumar@gmail.com, 93847566, lecturer
+15, david_tan, David321@!, David, Tan, male, 30-04-1987, davidtan@mail.com, 94857667, lecturer
+17, ahmed_hassan, Ahmed999@!, Ahmed, Hassan, male, 25-01-1986, ahmedhassan@mail.com, 96877869, lecturer
+18, alex_lee, Alex2023@#, Alex, Lee, male, 14-06-2004, alexlee@mail.com, 71829384, student
+19, maya_singh, Maya456@!, Maya, Singh, female, 03-08-2003, mayasingh@gmail.com, 72839485, student
+20, ryan_oconnor, Ryan789@#, Ryan, O'Connor, male, 19-12-2005, ryanoconnor@mail.com, 73849586, student
+21, sophia_lim, Sophia321@!, Sophia, Lim, female, 07-02-2004, sophialim@outlook.com, 74859687, student
+22, ethan_brown, Ethan654@#, Ethan, Brown, male, 28-05-2003, ethanbrown@mail.com, 75869788, student
+23, zara_ahmed, Zara999@!, Zara, Ahmed, female, 11-09-2005, zaraahmed@yahoo.com, 76879889, student
+24, lucas_fernandez, Lucas123@#, Lucas, Fernandez, male, 05-04-2004, lucasfernandez@mail.com, 77889990, student
+25, isabelle_wong, Isabelle456@!, Isabelle, Wong, female, 23-11-2003, isabellewong@gmail.com, 78890091, student
+26, nathan_raj, Nathan789@#, Nathan, Raj, male, 16-07-2005, nathanraj@mail.com, 79800192, student
+27, chloe_davis, Chloe321@!, Chloe, Davis, female, 02-01-2004, chloe davis@outlook.com, 80810293, student
+28, oliver_tan, Oliver654@#, Oliver, Tan, male, 20-10-2003, olivertan@mail.com, 81820394, student
+29, amelia_zhang, Amelia999@!, Amelia, Zhang, female, 13-03-2005, ameliazhang@yahoo.com, 82830495, student
+16, lisa_ng, Lisa654@#$, Lisa, Ng, female, 12-09-1989, lisang@yahoo.com, 95867768, lecturer

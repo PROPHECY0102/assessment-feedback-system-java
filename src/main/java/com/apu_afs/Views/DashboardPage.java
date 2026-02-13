@@ -229,7 +229,7 @@ public class DashboardPage extends JPanel {
     manageLecturerBtn.setBorder(BorderFactory.createCompoundBorder(manageLecturerBtn.getBorder(), BorderFactory.createEmptyBorder(5, 6, 5, 6)));
     manageLecturerBtn.setFocusable(false);
     manageLecturerBtn.addActionListener(e -> {
-      state.setUserRoleConditions(Set.copyOf(List.of(Role.ACADEMIC_LEADER.getValue())));
+      state.setUserRoleConditions(Set.copyOf(List.of(Role.LECTURER.getValue())));
       router.showView(Pages.MANAGEUSERS, state);
     });
     lecturerPanel = new JPanel(new MigLayout("insets 0, wrap 1, gap 5, fill"));

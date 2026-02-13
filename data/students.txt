@@ -2,3 +2,15 @@
 7, BSc (Hons) in Software Engineering, full, 2.5, 60.0, 26-06-2025
 9, Diploma In Information Technology, part, 3.12, 80.0, 14-02-2024
 11, Bacherlor of Laws, full, 4.0, 160.0, 01-05-2025
+18, BSc (Hons) in Computer Science, full, 3.78, 95, 15-09-2023
+19, BSc (Hons) in Data Science, full, 3.92, 88, 20-01-2024
+20, Diploma In Business Administration, part, 2.85, 75.0, 03-06-2024
+21, BSc (Hons) in Software Engineering, full, 3.45, 102, 12-09-2023
+22, Bachelor of Business Administration, full, 3.21, 118, 28-02-2024
+23, Diploma In Graphic Design, part, 3.67, 68.0, 07-10-2024
+24, BSc (Hons) in Cybersecurity, full, 2.98, 72, 19-11-2023
+25, Bachelor of Arts in Psychology, full, 3.55, 125, 04-01-2024
+26, Diploma In Information Technology, part, 2.76, 82.0, 16-08-2024
+27, BSc (Hons) in Computer Science, full, 3.89, 96, 22-09-2023
+28, Bachelor of Commerce, full, 3.34, 112, 11-03-2024
+29, BSc (Hons) in Data Science, full, 3.71, 90, 25-05-2024

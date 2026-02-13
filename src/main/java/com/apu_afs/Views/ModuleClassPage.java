@@ -264,7 +264,7 @@ public class ModuleClassPage extends JPanel {
     if (actionContext.equals("edit")) {
       for (int i = 0; i < moduleComboBox.getItemCount(); i++) {
         ComboBoxItem item = moduleComboBox.getItemAt(i);
-        if (item.getValue().equals(editingModuleClass.getDay())) {
+        if (item.getValue().equals(editingModuleClass.getModule().getID())) {
           moduleComboBox.setSelectedIndex(i);
           break;
         }
@@ -296,7 +296,7 @@ public class ModuleClassPage extends JPanel {
     if (actionContext.equals("edit")) {
       for (int i = 0; i < lecturerComboBox.getItemCount(); i++) {
         ComboBoxItem item = lecturerComboBox.getItemAt(i);
-        if (item.getValue().equals(editingModuleClass.getDay())) {
+        if (item.getValue().equals(editingModuleClass.getLecturer().getID())) {
           lecturerComboBox.setSelectedIndex(i);
           break;
         }
